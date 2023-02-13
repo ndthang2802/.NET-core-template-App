@@ -40,14 +40,12 @@ public class AssignRoleToUserCommandValidator : AbstractValidator<AssignRoleToUs
 }
 public class AssignRoleToUserCommandHandler : IRequestHandler<AssignRoleToUserCommand, Result>
 {
-    private readonly IMapper _mapper ;
     private readonly IUserService _userService;
     private readonly ICurrentUserService _currentUserService;
     private readonly IRoleService _roleService ;
 
-    public AssignRoleToUserCommandHandler(IUserService userService, IRoleService roleService ,ICurrentUserService currentUserService, IMapper mapper)
+    public AssignRoleToUserCommandHandler(IUserService userService, IRoleService roleService ,ICurrentUserService currentUserService)
     {
-        _mapper = mapper;
         _userService = userService;
         _currentUserService = currentUserService;
         _roleService = roleService;
@@ -67,7 +65,7 @@ public class AssignRoleToUserCommandHandler : IRequestHandler<AssignRoleToUserCo
             return Result.ItemNotFound();
         }
         entity.Roles = request.Roles;
-        bool succeeded = await  _userService.Update(entity);
+        bool succeeded = await  _userService.UpdateAndSave(entity);
         if (succeeded)
         {
             BaseReponse reponse = new BaseReponse {
@@ -77,7 +75,7 @@ public class AssignRoleToUserCommandHandler : IRequestHandler<AssignRoleToUserCo
             return Result.Success(reponse);
         }
         else {
-            return Result.Failure(HttpStatusCode.BadRequest, new string [] {"Add user Fails"});
+            return Result.Failure(HttpStatusCode.BadRequest, new string [] {"Update user Fails"});
         }
     }
 }

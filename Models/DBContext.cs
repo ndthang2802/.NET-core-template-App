@@ -28,6 +28,10 @@ public class DataContext : DbContext
     public DbSet<User> Users => Set<User>();
     public DbSet<Role> Roles => Set<Role>();
     public DbSet<TodoItem> TodoItems => Set<TodoItem>();
+    public DbSet<Product> Products => Set<Product>();
+    public DbSet<Order> Orders => Set<Order>();
+
+
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -38,6 +42,10 @@ public class DataContext : DbContext
         builder.Entity<User>().Property(f => f.Id).ValueGeneratedOnAdd();
         builder.Entity<Role>().Property(f => f.Id).ValueGeneratedOnAdd();
         builder.Entity<TodoItem>().Property(f => f.Id).ValueGeneratedOnAdd();
+        builder.Entity<Product>().Property(f => f.Id).ValueGeneratedOnAdd();
+        builder.Entity<Order>().Property(f => f.Id).ValueGeneratedOnAdd();
+        builder.Entity<Order>().HasIndex(u => u.Code).IsUnique();
+
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

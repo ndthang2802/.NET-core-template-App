@@ -32,15 +32,18 @@ public class UpdateUserCommandValidator : AbstractValidator<UpdateUserCommand>
     public UpdateUserCommandValidator(DataContext context)
     {
         _context = context;
-
-        RuleFor(v => v.Username)
-            .NotEmpty().NotNull().WithMessage("Username is required.")
-            .MaximumLength(30).WithMessage("Username must not exceed 30 characters.")
-            .MustAsync(BeUniqueUsername).WithMessage("The specified username already exists.");
-        RuleFor(v => v.Email)
-            .NotEmpty().NotNull().WithMessage("Email is required.")
-            .MaximumLength(100).WithMessage("Username must not exceed 30 characters.") // Change to format of email
-            .MustAsync(BeUniqueEmail).WithMessage("The specified username already exists.");
+        When(v => v.Username is not null, () => {
+            RuleFor(v => v.Username)
+                        .MaximumLength(30).WithMessage("Username must not exceed 30 characters.")
+                        .MustAsync(BeUniqueUsername).WithMessage("The specified username already exists.");
+        });
+        When(v => v.Email is not null, () => {
+            RuleFor(v => v.Email)
+                        .NotEmpty().NotNull().WithMessage("Email is required.")
+                        .MaximumLength(100).WithMessage("Username must not exceed 30 characters.") // Change to format of email
+                        .MustAsync(BeUniqueEmail).WithMessage("The specified username already exists.");
+        });
+        
     }
 
     public async Task<bool> BeUniqueUsername(string username, CancellationToken cancellationToken)
@@ -81,7 +84,7 @@ public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, Resul
             return Result.ItemNotFound();
         }
         _mapper.Map<UpdateUserCommand,User>(request , UserToUpdate);
-        bool succeeded = await  _userService.Update(UserToUpdate);
+        bool succeeded = await  _userService.UpdateAndSave(UserToUpdate);
         if (succeeded)
         {
             BaseReponse reponse = new BaseReponse {

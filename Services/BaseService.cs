@@ -5,12 +5,16 @@ namespace StartFromScratch.Services;
 public interface IBaseService<T> where T : class
 {
     public  Task<bool> AddAsync (T entity);
-    public  Task<bool> Update (T entity);
+    public  Task<bool> AddRangeAsync (IList<T> entity);
+
+    public  Task<bool> UpdateAndSave (T entity);
+    public void Update(T entity);
+    public Task<bool> SaveChangesAsync ();
     public  Task<bool> Remove (T entity);
     public  Task<T?> GetById (int Id);
     public  Task<IList<T>> GetAll ();
-
-
+    public void Delete (T entity);
+    public Task<bool> DeleteAndSave(T entity);
 }
 public class BaseService<T>: IBaseService<T> where T : class 
 {
@@ -25,7 +29,13 @@ public class BaseService<T>: IBaseService<T> where T : class
         int result = await _context.SaveChangesAsync(new CancellationToken());
         return result > 0;
     }
-    public async Task<bool> Update (T entity)
+    public async Task<bool> AddRangeAsync (IList<T> entity)
+    {
+        await _context.Set<T>().AddRangeAsync(entity);
+        int result = await _context.SaveChangesAsync(new CancellationToken());
+        return result > 0;
+    }
+    public async Task<bool> UpdateAndSave (T entity)
     {
         _context.Set<T>().Update(entity);
         int result = await _context.SaveChangesAsync(new CancellationToken());
@@ -44,5 +54,24 @@ public class BaseService<T>: IBaseService<T> where T : class
     public async Task<IList<T>> GetAll ()
     {
         return await _context.Set<T>().ToListAsync(new CancellationToken());
+    }
+    public void  Update (T entity)
+    {
+        _context.Set<T>().Update(entity);;
+    }
+    public void Delete (T entity)
+    {
+        _context.Set<T>().Remove(entity);
+    }
+    public async Task<bool> DeleteAndSave(T entity)
+    {
+        _context.Set<T>().Remove(entity);
+        int result = await _context.SaveChangesAsync(new CancellationToken());
+        return result > 0;
+    }
+    public async Task<bool> SaveChangesAsync ()
+    {
+        int result = await _context.SaveChangesAsync(new CancellationToken());
+        return result > 0;
     }
 }

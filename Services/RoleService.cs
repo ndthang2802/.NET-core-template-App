@@ -6,6 +6,7 @@ namespace StartFromScratch.Services;
 public interface IRoleService : IBaseService<Role>
 {
     public Task <IList<Role>> GetByCodes (string[] codes);
+    public Task <IList<Role>> GetAllLowerLevel (int level);
 }
 public class RoleService :  BaseService<Role>, IRoleService
 {
@@ -17,5 +18,9 @@ public class RoleService :  BaseService<Role>, IRoleService
     public async Task <IList<Role>> GetByCodes (string[] codes)
     {
         return await _context.Roles.Where(x => codes.Contains(x.Code)).ToListAsync(new CancellationToken());
+    }
+    public async Task <IList<Role>> GetAllLowerLevel (int level)
+    {
+        return await _context.Roles.Where(x => x.Level > level).ToListAsync(new CancellationToken());
     }
 }

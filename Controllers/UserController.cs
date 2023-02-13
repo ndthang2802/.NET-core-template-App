@@ -19,7 +19,7 @@ public class UserController : ApiControllerBase
     {
         return await Mediator.Send(command);
     }
-    [Authorize("Administrator")]
+    [Authorize( roles: new string[] { "Administrator"})]
     [HttpGet("all")]
     public async Task<ActionResult<Result>> GetAll([FromQuery] GetAllUserCommand command)
     {

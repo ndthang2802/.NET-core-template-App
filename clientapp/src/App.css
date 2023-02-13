@@ -1,0 +1,86 @@
+
+body {
+  padding: 1rem;
+}
+a {
+  cursor: pointer;
+}
+/*PRODUCT*/
+.ProductImageContainer {
+  position: relative;
+}
+.productExtendOverlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    overflow: hidden;
+    width: 100%;
+    height: 0;
+    transition: .5s ease;
+    display: flex;
+    justify-content: center;
+}
+.productExtendContainer {
+  background-color: #f5f6f8;
+  height: fit-content;
+  display: flex;
+  flex-direction: row;
+  border-radius: 5%;
+  gap: .675rem;
+}
+
+.left-right-border {
+  border-left: 1px solid #E3E9EF;
+  border-right: 1px solid #E3E9EF;
+}
+
+.ProductEnxtendIcon  {
+  font-size: 1.1rem!important;
+}
+
+.ProductContainer:hover .productExtendOverlay {
+  height: 15%;
+}
+.ProductEntendIcon {
+  margin-left: 10px;
+  margin-right: 10px;
+
+}
+.ProductImageContainer img {
+  max-width: inherit;
+  max-height: 180px;
+  width: auto;
+  object-fit: contain;
+}
+/*PRODUCT LIST*/
+.ProductListContainer {
+  position: relative;
+  display: block;
+  box-sizing: inherit;
+  width: fit-content;
+}
+.ProductListPane {
+  display: flex;
+  flex-direction: row;
+  gap: 2rem;
+  width: fit-content;
+}
+.ProductListLeftButton {
+  position: absolute!important;
+  transform: translateY(-50%);
+  top: calc(50% - 0px);
+  left: -20px;
+  background-color: white!important;
+  color: #D23F57!important;
+  box-shadow: 0px 4px 16px rgb(43 52 69 / 10%);
+}
+.ProductListRightButton{
+  position: absolute!important;
+  transform: translateY(-50%);
+  top: calc(50% - 0px);
+  right: -20px;
+  background-color : #fff!important;
+  color: #D23F57!important;
+  box-shadow: 0px 4px 16px rgb(43 52 69 / 10%);
+}

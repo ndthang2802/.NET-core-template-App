@@ -1,5 +1,7 @@
 using System.Text.Json.Serialization;
 using StartFromScratch.Common;
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace StartFromScratch.Entities;
 public class User : BaseAuditableEntity
 {
@@ -10,4 +12,6 @@ public class User : BaseAuditableEntity
     [JsonIgnore]
     public string? PasswordHash { get; set; }
     public string Roles {get; set;} = string.Empty;
+    [NotMapped]
+    public IList<Policy> Policies {get;set;} = new List<Policy>();
 }

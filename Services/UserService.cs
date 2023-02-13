@@ -6,6 +6,7 @@ namespace StartFromScratch.Services;
 public interface IUserService : IBaseService<User>
 {
     public Task<object?> Authenticate(string username, string password);
+    public Task<List<Policy>> GetPoliciesOfUser(User user);
 }
 public class UserService :  BaseService<User>, IUserService
 {
@@ -23,5 +24,18 @@ public class UserService :  BaseService<User>, IUserService
             return null;
         var jwtToken = _jwtUtil.GenerateToken(user);
         return  new { access_token = jwtToken, user = user };
+    }
+    public async Task<List<Policy>> GetPoliciesOfUser(User user)
+    {
+        List<string> user_roles = user.Roles.Split(",").ToList();
+        if (user_roles.Count() == 0)
+            return new List<Policy>();
+        IList<Role> user_rolesList = await _context.Roles.Where(x => x.Code != null ? user_roles.Contains(x.Code) : false).ToListAsync( new CancellationToken());
+        List<Policy> res = new List<Policy>();
+        for (int i = 0; i < user_rolesList.Count(); i ++)
+        {
+            res.Concat(user_rolesList[i].PoliciesList ??  new List<Policy>());
+        }
+        return new HashSet<Policy>(res).ToList();
     }
 }

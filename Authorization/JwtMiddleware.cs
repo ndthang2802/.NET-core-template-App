@@ -18,6 +18,10 @@ public class JwtMiddleWare
             if (userID != null )
             {
                 var User = await _userService.GetById(userID.Value);
+                if(User != null)
+                {
+                    User.Policies = await _userService.GetPoliciesOfUser(User);
+                }
                 _context.Items["User"] = User;
             }
         }

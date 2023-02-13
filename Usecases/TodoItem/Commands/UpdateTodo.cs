@@ -76,7 +76,7 @@ public class UpdateTodoItemCommandHandler : IRequestHandler<UpdateTodoItemComman
         switch (request.Type) {
             case UpdateTodoType.UpdateInfomation :
                 _mapper.Map<UpdateTodoItemCommand,TodoItem>(request, entity);
-                succeeded = await  _todoItemService.Update(entity);
+                succeeded = await  _todoItemService.UpdateAndSave(entity);
                 if (succeeded)
                 {
                     BaseReponse reponse = new BaseReponse {
@@ -90,7 +90,7 @@ public class UpdateTodoItemCommandHandler : IRequestHandler<UpdateTodoItemComman
                 }
             case UpdateTodoType.MakeAsDone :
                 entity.Done = true;
-                succeeded = await  _todoItemService.Update(entity);
+                succeeded = await  _todoItemService.UpdateAndSave(entity);
                 if (succeeded)
                 {
                     BaseReponse reponse = new BaseReponse {

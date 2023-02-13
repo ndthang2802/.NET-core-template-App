@@ -9,6 +9,7 @@ public interface ICurrentUserService
     User? User {get;}
     public bool IsCurrentUserHaveGreaterRole (IList<Role> request, IList<Role> current);
     public bool IsCurrentUserCanEdit(int targetId);
+    bool IsAdmin {get;}
 }
 
 public class CurrentUserService : ICurrentUserService
@@ -25,6 +26,8 @@ public class CurrentUserService : ICurrentUserService
     public string? Roles => ((User?)_httpContextAccessor.HttpContext?.Items["User"])?.Roles;
     public User? User => ((User?)_httpContextAccessor.HttpContext?.Items["User"]);
 
+    public bool IsAdmin => ((User?)_httpContextAccessor.HttpContext?.Items["User"])?.Roles.Split(",").Contains("Administrator") ?? false;
+
     public bool IsCurrentUserHaveGreaterRole (IList<Role> request, IList<Role> current)
     {
         return request.All(x => current.Contains(x) ||   current.Any(c => c.Level >= x.Level ));
@@ -34,6 +37,4 @@ public class CurrentUserService : ICurrentUserService
         User? _user = ((User?)_httpContextAccessor.HttpContext?.Items["User"]);
         return _user != null && ( _user.Id == targetId );
     }
-
-    
 }
