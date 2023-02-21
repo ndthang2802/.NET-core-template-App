@@ -4,7 +4,11 @@ import {ProductList} from './Components/ProductList';
 import { Product } from './Components/Product';
 import CategoryMenu from './Components/CategoryMenu';
 import { Box, Chip, Container, createTheme,ThemeProvider , Grid, ListItem, Paper, Stack, Typography } from '@mui/material';
-
+import {BoxNavItem} from './Components/BoxNavItem';
+import LocalShippingOutlinedIcon from '@mui/icons-material/LocalShippingOutlined';
+import LocalAtmOutlinedIcon from '@mui/icons-material/LocalAtmOutlined';
+import GradingOutlinedIcon from '@mui/icons-material/GradingOutlined';
+import PhoneForwardedOutlinedIcon from '@mui/icons-material/PhoneForwardedOutlined';
 const THEME = createTheme({
   typography: {
    "fontFamily": `"Roboto Mono", "monospace", "Ubuntu", sans-serif`,
@@ -33,6 +37,7 @@ function App() {
     { key: 2, color : '#4b9d6e' ,label: 'Polymer' },
     { key: 3, color : '#4b9d6e' ,label: 'React' },
     { key: 4, color : '#4b9d6e' ,label: 'Vue.js' },
+    { key: 5, color : '#4b9d6e' ,label: 'Angular' },
   ]);
 
   const handleDelete = (chipToDelete: ChipData) => () => {
@@ -47,16 +52,16 @@ function App() {
           <Container maxWidth="lg">
                 <Grid container spacing={0.5}>
                   <Grid item xs={6} md={3} style={{padding : "2rem 0"}}>
-                    <Box className="AppBoxNav"></Box>
+                    <BoxNavItem Icon={< LocalShippingOutlinedIcon />} FirstText = "Fast Delivery" SecondText='Start from ₫50.000!' />
                   </Grid>
                   <Grid item xs={6} md={3} style={{padding : "2rem 0"}}>
-                    <Box className="AppBoxNav"></Box>
+                    <BoxNavItem Icon={< LocalAtmOutlinedIcon />} FirstText = "Cashback" SecondText='Up to 90%!' />
                   </Grid>
                   <Grid item xs={6} md={3} style={{padding : "2rem 0"}} >
-                    <Box className="AppBoxNav"></Box>
+                    <BoxNavItem Icon={< GradingOutlinedIcon />} FirstText = "High Quality" SecondText='Real Product!' />
                   </Grid>
                   <Grid item xs={6} md={3} style={{padding : "2rem 0"}} >
-                    <Box className="AppBoxNav"></Box>
+                  <BoxNavItem Icon={< PhoneForwardedOutlinedIcon />} FirstText = "Daily Service" SecondText='Support 24/7!' />
                   </Grid>
                 </Grid>
                 <Grid container spacing={0.5}>
