@@ -14,19 +14,20 @@ export interface IProductProps {
     ProductName: string,
     ProductPrice : number,
     ProductDiscount: number,
-    ProductRating : number
+    ProductRating : number,
 }
+
 
 export function Product (props: IProductProps) {
   return (
         <Paper elevation={2}
             style = {{
                 minWidth: '220px',
-                maxWidth : '270px',
+                maxWidth : '240px',
                 minHeight : '290px',
                 maxHeight : '390px'
             }}
-            className="ProductContainer"
+            className={"ProductContainer"}
         >
             <Box
                 style = {{
@@ -80,10 +81,10 @@ export function Product (props: IProductProps) {
                 }}
             >
                 <Box
-                        
+                        style={{color : '#D23F57'}}
                 >
                     <a>
-                         <Typography variant="subtitle2" gutterBottom>
+                         <Typography variant="subtitle2" style={{fontWeight : 700}}  gutterBottom>
                             {props.ProductName} 
                         </Typography>
                     </a>
@@ -97,15 +98,16 @@ export function Product (props: IProductProps) {
                         >
                             <Typography variant="button" display="block" gutterBottom
                                 style={{
-                                    textAlign : 'center'
+                                    textAlign : 'center',
+                                    fontWeight : 700
                                 }}
                             >
-                                {`VND${props.ProductPrice * ( props.ProductDiscount != 0 ? props.ProductDiscount : 1)}`}
+                                {`₫${props.ProductPrice * ( props.ProductDiscount != 0 ? props.ProductDiscount : 1)}`}
                             </Typography>
                             <Typography variant="button" display="block" gutterBottom
-                                style = {{ textDecoration : 'line-through'}}
+                                style = {{ textDecoration : 'line-through', color : '#7D879C'}}
                             >
-                                {`VND${props.ProductPrice}`}
+                                {`₫${props.ProductPrice}`}
                             </Typography>
                         </Box>
                 </Box>

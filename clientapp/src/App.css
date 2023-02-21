@@ -1,11 +1,39 @@
-
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@200&family=Ubuntu:wght@400;700&display=swap');
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  box-sizing: border-box;
+  -webkit-text-size-adjust: 100%;
+}
 body {
-  padding: 1rem;
+  padding: 0;
+  background-color: #f6f9fc;
+  font-family: 'Roboto Mono', monospace;
+  font-family: 'Ubuntu', sans-serif!important;
 }
 a {
   cursor: pointer;
 }
-/*PRODUCT*/
+.AppContainer
+{
+  position: relative;
+}
+.AppHeader {
+  width: auto;
+  height: 80px;
+  position: sticky;
+  background-color: #fff;
+  top: 0;
+  z-index: 1000;
+}
+.AppBoxNav {
+  width: 90%;
+  height: 100px;
+  background-color: #fff;
+}
+.ProductRowContainer {
+  padding: 0 0 0 1rem;
+}
 .ProductImageContainer {
   position: relative;
 }
@@ -50,15 +78,14 @@ a {
 .ProductImageContainer img {
   max-width: inherit;
   max-height: 180px;
-  width: auto;
+  height: auto;
   object-fit: contain;
 }
-/*PRODUCT LIST*/
 .ProductListContainer {
   position: relative;
   display: block;
   box-sizing: inherit;
-  width: fit-content;
+  width: 100%;
 }
 .ProductListPane {
   display: flex;
@@ -68,19 +95,88 @@ a {
 }
 .ProductListLeftButton {
   position: absolute!important;
-  transform: translateY(-50%);
-  top: calc(50% - 0px);
-  left: -20px;
+  /* transform: translateY(-50%); */
+  /* top: calc(50% - 0px);*/
+  left: calc(3% + 1px);
   background-color: white!important;
   color: #D23F57!important;
   box-shadow: 0px 4px 16px rgb(43 52 69 / 10%);
 }
 .ProductListRightButton{
   position: absolute!important;
-  transform: translateY(-50%);
-  top: calc(50% - 0px);
-  right: -20px;
+  /* transform: translateY(-50%); */
+  /* top: calc(50% - 0px); */
+  right: calc(3% + 1px);
   background-color : #fff!important;
   color: #D23F57!important;
   box-shadow: 0px 4px 16px rgb(43 52 69 / 10%);
 }
+.react-multi-carousel-list   {
+  padding: 0.2rem 1rem 3rem 1rem;
+}
+
+
+.ListMenu 
+{
+  background-color: #fff;
+  min-width: 250px;
+  position: sticky!important;
+  top: 80px;
+}
+.ListItemText {
+  color: #87898d;
+  line-height: 1.5!important;
+  font-weight: 600!important;
+  text-transform: none;
+  white-space: normal;
+}
+
+.ListItemIcon {
+  width: auto;
+  height: 1.875rem;
+}
+
+.ListItemText:hover {
+  color : #D23F57;
+}
+
+
+
+
+/*
+
+
+.ProductContainer {
+  transition: height 1s, width 1s, left 1s, margin-top 1s, line-height 1s, background-color 1s;
+}
+
+.left-enter {
+  opacity: 0;
+  
+}
+.left-enter.left-enter-active {
+  opacity: 1;
+  transition: left 1s, opacity 1s, height 1s, width 1s, margin-top 1s, line-height 1s;
+}
+.left-leave {
+  opacity: 1;
+  
+}
+.left-leave.left-leave-active {
+  opacity: 0;
+  transition: left 1s, opacity 1s, height 1s, width 1s, margin-top 1s, line-height 1s;
+}
+.right-enter {
+  opacity: 0;
+}
+.right-enter.right-enter-active {
+  opacity: 1;
+  transition: left 1s, opacity 1s, height 1s, width 1s, margin-top 1s, line-height 1s;
+}
+.right-leave {
+  opacity: 1;
+}
+.right-leave.right-leave-active {
+  opacity: 0;
+  transition: left 1s, opacity 1s, height 1s, width 1s, margin-top 1s, line-height 1s;
+} */

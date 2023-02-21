@@ -3,35 +3,77 @@ import * as React from 'react';
 import { Product } from './Product';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import Carousel from "react-multi-carousel";
+import "react-multi-carousel/lib/styles.css";
+import { ButtonGroupProps, ArrowProps, DotProps } from 'react-multi-carousel/lib/types';
+interface CustomLeftArrowProps extends ArrowProps {
+//   myOwnStuff: string;
+}
+interface CustomRightArrowProps extends ArrowProps {
+
+}
+const responsive = {
+  superLargeDesktop1: {
+    // the naming can be any, depends on you.
+    breakpoint: { max: 1800, min: 1640 },
+    items: 4
+  },
+  superLargeDesktop: {
+    // the naming can be any, depends on you.
+    breakpoint: { max: 4000, min: 1430 },
+    items: 3
+  },
+  desktop1: {
+    breakpoint: { max: 1430, min: 1220 },
+    items: 3
+  },
+  desktop: {
+    breakpoint: { max: 1220, min: 1015 },
+    items: 2
+  },
+  tablet1: {
+    breakpoint: { max: 1015, min: 810 },
+    items: 2
+  },
+  tablet: {
+    breakpoint: { max: 810, min: 610 },
+    items: 2
+  },
+  mobile1: {
+    breakpoint: { max: 610, min: 405 },
+    items: 2
+  },
+  mobile: {
+    breakpoint: { max: 405, min: 0 },
+    items: 1
+  }
+};
 export interface IProductListProps {
-    Product : React.ReactElement[]
+   Products : React.ReactElement[]
 }
 
 export function ProductList (props: IProductListProps) {
-    const [displayProducts, setDisplayProducts] = React.useState<number []>([1,2,3]);
-    const [direction, setDirection] = React.useState<string>("");
-    
-    // const moveLeft = () => {
-    //     var newActive = displayProducts
-    //     newActive--
-    //     this.setState({
-    //         active: newActive < 0 ? this.state.items.length - 1 : newActive,
-    //         direction: 'left'
-    //     })
-    // }
+    const CustomLeftArrow = ({ onClick }: CustomLeftArrowProps) => {
+        return <IconButton className = "ProductListLeftButton" aria-label="ProductListback" size="large" onClick={onClick} >
+                    <ArrowBackIcon fontSize="inherit" />
+                </IconButton>
+    }
+
+    const CustomRightArrow = ({ onClick }: CustomRightArrowProps) => {
+        return <IconButton className = "ProductListRightButton" aria-label="ProductListforward" size="large" onClick={onClick} >
+                    <ArrowForwardIcon fontSize="inherit" />
+                </IconButton>
+    }
+      
     return (
-      <Box className="ProductListContainer">
-        <Box className="ProductListPane">
-            <Product  ImageLink={"https://www.pngmart.com/files/22/Honedge-Pokemon-PNG-Pic.png"} ProductName = "Honedge" ProductPrice = {1000} ProductRating={3} ProductDiscount = {0.5} />
-            <Product  ImageLink={"https://www.pngmart.com/files/22/Arceus-Pokemon-PNG-Isolated-Photo.png"} ProductName = "Arceus" ProductPrice = {2000} ProductRating={5} ProductDiscount = {0.8} />
-            <Product  ImageLink={"https://www.pngmart.com/files/12/Stuart-Minion-PNG-Clipart.png"} ProductName = "Stuart" ProductPrice = {700} ProductRating={4.5} ProductDiscount = {0.2} />
-        </Box>
-        <IconButton className = "ProductListLeftButton" aria-label="ProductListback" size="large">
-            <ArrowBackIcon fontSize="inherit" />
-        </IconButton>
-        <IconButton className = "ProductListRightButton" aria-label="ProductListforward" size="large">
-            <ArrowForwardIcon fontSize="inherit" />
-        </IconButton>
-      </Box>
+        
+            <Carousel
+                customLeftArrow={<CustomLeftArrow />}
+                customRightArrow={<CustomRightArrow />}
+                responsive={responsive}
+                // showDots={true}
+            >
+                {props.Products}
+            </Carousel>
     );
 }
