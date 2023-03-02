@@ -80,7 +80,7 @@ public class AddOrderCommandHandler : IRequestHandler<AddOrderCommand, Result>
         {
             BaseReponse reponse = new BaseReponse {
                 Message = "Add Order Success!",
-                Responses = entity
+                Data = entity
             };
             return Result.Success(reponse);
         }

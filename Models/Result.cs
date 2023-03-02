@@ -40,5 +40,5 @@ public class Result
 public class BaseReponse
 {
     public string? Message {get;set;}
-    public dynamic? Responses {get;set;}
+    public dynamic? Data {get;set;}
 }

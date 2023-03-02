@@ -39,7 +39,7 @@ public class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, Result>
         {
             BaseReponse reponse = new BaseReponse {
                 Message = "Login User Success!",
-                Responses = result
+                Data = result
             };
             return Result.Success(reponse);
         }

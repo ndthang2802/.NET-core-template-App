@@ -89,7 +89,7 @@ public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, Resul
         {
             BaseReponse reponse = new BaseReponse {
                 Message = "Update User Success!",
-                Responses = UserToUpdate
+                Data = UserToUpdate
             };
             return Result.Success(reponse);
         }

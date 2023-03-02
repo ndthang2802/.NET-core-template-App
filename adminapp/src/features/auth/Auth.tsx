@@ -6,10 +6,10 @@ import { authSelector , LoginAsync } from './authSlice';
 export function Auth() {
   const { currentUser, isLoading, error, isAuth } = useSelector(authSelector)
   const dispatch = useAppDispatch();
-  console.log(currentUser);
-  console.log(isLoading);
-  console.log(error);
-  console.log(isAuth);
+  console.log("Current user: " ,currentUser);
+  console.log('Loading: ', isLoading);
+  console.log('error: ',error);
+  console.log('is Auth: ',isAuth);
     const [usernameInput, setUsernameInput] = useState("");
     const [passwordInput, setPasswordInput] = useState("");
 

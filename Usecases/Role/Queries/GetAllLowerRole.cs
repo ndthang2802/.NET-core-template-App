@@ -21,7 +21,7 @@ public class GetAllLowerRolesCommandHandler : IRequestHandler<GetAllLowerRolesCo
         {
            BaseReponse reponse_ = new BaseReponse {
                 Message = "Query Success!",
-                Responses = ""
+                Data = ""
             };
             return Result.Success(reponse_);
         }
@@ -29,7 +29,7 @@ public class GetAllLowerRolesCommandHandler : IRequestHandler<GetAllLowerRolesCo
         IList<Role> entities =   await  _roleService.GetAllLowerLevel(rolesOfUser.Select(x=>x.Level).ToList().Min());
         BaseReponse reponse = new BaseReponse {
             Message = "Query Success!",
-            Responses = entities
+            Data = entities
         };
         return Result.Success(reponse);
     }

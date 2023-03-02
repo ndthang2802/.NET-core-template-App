@@ -21,7 +21,7 @@ public class GetAllUserCommandHandler : IRequestHandler<GetAllUserCommand, Resul
         IList<User> entities =   await  _userService.GetAll();
         BaseReponse reponse = new BaseReponse {
             Message = "Query Success!",
-            Responses = entities
+            Data = entities
         };
         return Result.Success(reponse);
     }

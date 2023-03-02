@@ -70,7 +70,7 @@ public class AssignRoleToUserCommandHandler : IRequestHandler<AssignRoleToUserCo
         {
             BaseReponse reponse = new BaseReponse {
                 Message = "Update User Success!",
-                Responses = entity
+                Data = entity
             };
             return Result.Success(reponse);
         }

@@ -65,7 +65,7 @@ public class AddProductCommandHandler : IRequestHandler<AddProductCommand, Resul
         {
             BaseReponse reponse = new BaseReponse {
                 Message = "Add Product Success!",
-                Responses = entity
+                Data = entity
             };
             return Result.Success(reponse);
         }

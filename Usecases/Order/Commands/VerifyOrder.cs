@@ -71,7 +71,7 @@ public class VerifyOrderCommandHandler : IRequestHandler<VerifyOrderCommand, Res
         {
             BaseReponse reponse = new BaseReponse {
                 Message = "Verify Order Success!",
-                Responses = _order_to_verify
+                Data = _order_to_verify
             };
             return Result.Success(reponse);
         }

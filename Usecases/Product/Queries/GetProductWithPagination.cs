@@ -26,7 +26,7 @@ public class GetProductsWithPaginationCommandHandler : IRequestHandler<GetProduc
         PaginatedList<Product> entities =   await  _productService.GetWithPagination(request.PageNumber, request.PageSize);
         BaseReponse reponse = new BaseReponse {
             Message = "Query Success!",
-            Responses = entities
+            Data = entities
         };
         return Result.Success(reponse);
     }

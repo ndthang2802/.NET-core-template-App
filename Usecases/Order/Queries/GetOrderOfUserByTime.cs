@@ -24,7 +24,7 @@ public class GetOrdersOfUserByTimeCommandHandler : IRequestHandler<GetOrdersOfUs
         IList<Order> entities =   await  _orderService.GetAllOrdeByUserByTime( _currentUserService.UserId, request.FromDate, request.ToDate);
         BaseReponse reponse = new BaseReponse {
             Message = "Query Success!",
-            Responses = entities
+            Data = entities
         };
         return Result.Success(reponse);
     }

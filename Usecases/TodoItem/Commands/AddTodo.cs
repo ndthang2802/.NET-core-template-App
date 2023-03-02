@@ -62,7 +62,7 @@ public class AddTodoItemCommandHandler : IRequestHandler<AddTodoItemCommand, Res
         {
             BaseReponse reponse = new BaseReponse {
                 Message = "Add Todo item Success!",
-                Responses = entity
+                Data = entity
             };
             return Result.Success(reponse);
         }

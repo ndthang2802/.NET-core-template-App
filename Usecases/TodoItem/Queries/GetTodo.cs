@@ -27,7 +27,7 @@ public class GetTodoByUserCommandHandler : IRequestHandler<GetTodoByUserCommand,
         IList<TodoItem> entities =   await  _todoItemService.GetByUserId(_currentUserService.UserId);
         BaseReponse reponse = new BaseReponse {
             Message = "Query Success!",
-            Responses = entities
+            Data = entities
         };
         return Result.Success(reponse);
     }

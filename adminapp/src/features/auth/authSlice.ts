@@ -1,14 +1,14 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { AppThunk, RootState } from '../../app/store';
 import { fetchAdminLogin, LoginData } from './authAPI'
-export interface AuthError {
-    message: string
-}
+// export interface AuthError {
+//     message: string[]
+// }
 export interface AuthState {
     isAuth: boolean
     currentUser?: CurrentUser
     isLoading: boolean
-    error: AuthError
+    error?: string []
 }
 export interface CurrentUser {
     Id: number
@@ -17,15 +17,21 @@ export interface CurrentUser {
 export const initialState: AuthState = {
     isAuth: false,
     isLoading: false,
-    error: {message: 'An Error occurred'},
 }
 
-export const LoginAsync = createAsyncThunk<CurrentUser, LoginData>(
+export const LoginAsync = createAsyncThunk<CurrentUser, LoginData , { rejectValue: string [] }>(
     'user/login',
-    async (data) => {
+    async (data  , thunkApi) => {
       const response = await fetchAdminLogin(data);
-      // The value we return becomes the `fulfilled` action payload
-      return  (await response.json()) as CurrentUser  ;
+      if (response.responses && response.responses.data.user)
+      {
+        
+        return (response.responses.data.user) as CurrentUser
+      }
+      else {
+        return thunkApi.rejectWithValue((response.errors) as string[]);
+      }
+      
     }
   );
 
@@ -39,13 +45,13 @@ export const authSlice = createSlice({
         },
         setAuthSuccess: (state, { payload }: PayloadAction<CurrentUser>) => {
             state.currentUser = payload
-            state.isAuth = true
+            //state.isAuth = true
         },
         setLogOut: (state) => {
             state.isAuth = false
             state.currentUser = undefined
         },
-        setAuthFailed: (state, { payload }: PayloadAction<AuthError>) => {
+        setAuthFailed: (state, { payload }: PayloadAction<string[]>) => {
             state.error = payload
             state.isAuth = false
         },
@@ -56,14 +62,15 @@ export const authSlice = createSlice({
             state.isLoading = true;
             state.isAuth = false;
           })
-          .addCase(LoginAsync.fulfilled, (state, action) => {
+          .addCase(LoginAsync.fulfilled, (state,action) => {
             state.isLoading = false;
             state.isAuth = true;
             state.currentUser = action.payload
           })
-          .addCase(LoginAsync.rejected, (state) => {
+          .addCase(LoginAsync.rejected, (state, action) => {
             state.isLoading = false;
             state.isAuth = false;
+            state.error = action.payload
           });
       },
 })

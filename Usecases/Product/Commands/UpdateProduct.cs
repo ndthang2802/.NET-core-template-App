@@ -60,7 +60,7 @@ public class UpdateProductCommandHandler : IRequestHandler<UpdateProductCommand,
         {
             BaseReponse reponse = new BaseReponse {
                 Message = "Update Product Success!",
-                Responses = entity
+                Data = entity
             };
             return Result.Success(reponse);
         }

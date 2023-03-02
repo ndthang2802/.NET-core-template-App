@@ -73,7 +73,7 @@ public class AddUserCommandHandler : IRequestHandler<AddUserCommand, Result>
         {
             BaseReponse reponse = new BaseReponse {
                 Message = "Add User Success!",
-                Responses = entity
+                Data = entity
             };
             return Result.Success(reponse);
         }

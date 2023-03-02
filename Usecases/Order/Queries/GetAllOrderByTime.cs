@@ -22,7 +22,7 @@ public class GetAllOrdersByTimeCommandHandler : IRequestHandler<GetAllOrdersByTi
         IList<Order> entities =   await  _Orderservice.GetAllOrderByTime(request.FromDate, request.ToDate);
         BaseReponse reponse = new BaseReponse {
             Message = "Query Success!",
-            Responses = entities
+            Data = entities
         };
         return Result.Success(reponse);
     }

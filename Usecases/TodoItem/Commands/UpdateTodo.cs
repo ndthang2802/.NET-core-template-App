@@ -81,7 +81,7 @@ public class UpdateTodoItemCommandHandler : IRequestHandler<UpdateTodoItemComman
                 {
                     BaseReponse reponse = new BaseReponse {
                         Message = "Add Todo item Success!",
-                        Responses = entity
+                        Data = entity
                     };
                     return Result.Success(reponse);
                 }
@@ -95,7 +95,7 @@ public class UpdateTodoItemCommandHandler : IRequestHandler<UpdateTodoItemComman
                 {
                     BaseReponse reponse = new BaseReponse {
                         Message = "Add Todo item Success!",
-                        Responses = entity
+                        Data = entity
                     };
                     return Result.Success(reponse);
                 }

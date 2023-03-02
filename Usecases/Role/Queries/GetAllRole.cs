@@ -21,7 +21,7 @@ public class GetAllRolesCommandHandler : IRequestHandler<GetAllRolesCommand, Res
         IList<Role> entities =   await  _roleService.GetAll();
         BaseReponse reponse = new BaseReponse {
             Message = "Query Success!",
-            Responses = entities
+            Data = entities
         };
         return Result.Success(reponse);
     }

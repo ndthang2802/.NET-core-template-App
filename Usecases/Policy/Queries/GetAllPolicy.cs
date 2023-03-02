@@ -12,7 +12,7 @@ public class GetAllPoliciesCommandHandler : IRequestHandler<GetAllPoliciesComman
         
         BaseReponse reponse = new BaseReponse {
             Message = "Query Success!",
-            Responses = Enum.GetNames(typeof(Policy)).ToList()
+            Data = Enum.GetNames(typeof(Policy)).ToList()
         };
         return await Task.FromResult(Result.Success(reponse));
     }
