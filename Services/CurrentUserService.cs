@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using StartFromScratch.Entities;
+using Microsoft.AspNetCore.Authentication;
 
 namespace StartFromScratch.Services;
 public interface ICurrentUserService
@@ -10,6 +11,7 @@ public interface ICurrentUserService
     public bool IsCurrentUserHaveGreaterRole (IList<Role> request, IList<Role> current);
     public bool IsCurrentUserCanEdit(int targetId);
     bool IsAdmin {get;}
+    public  void HttpContextSignin(string token);
 }
 
 public class CurrentUserService : ICurrentUserService
@@ -36,5 +38,20 @@ public class CurrentUserService : ICurrentUserService
     {
         User? _user = ((User?)_httpContextAccessor.HttpContext?.Items["User"]);
         return _user != null && ( _user.Id == targetId );
+    }
+
+    public void HttpContextSignin(string token){
+        //var claimsIdentity = new ClaimsIdentity(claim, "Cookies");
+        //var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+         if(_httpContextAccessor.HttpContext != null ){
+            var cookieOptions = new Microsoft.AspNetCore.Http.CookieOptions()
+            {
+                HttpOnly = true, IsEssential = true, //<- there
+                Expires = DateTime.Now.AddMonths(1), 
+            };
+            _httpContextAccessor.HttpContext.Response.Cookies.Append("X-Access-Token", token, new CookieOptions() { HttpOnly = true, SameSite = SameSiteMode.Strict });
+            _httpContextAccessor.HttpContext.Response.Cookies.Append("X-Refresh-Token", token, new CookieOptions() { HttpOnly = true, SameSite = SameSiteMode.Strict });
+         }
+
     }
 }

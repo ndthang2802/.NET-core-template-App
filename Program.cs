@@ -52,7 +52,14 @@ builder.Services.AddMediatR(Assembly.GetExecutingAssembly());
 
 builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
-
+ builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy",
+                    builder => builder.WithOrigins("http://localhost:3000") 
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials());
+            });
 builder.Services.AddControllers();
 
                 //.AddFluentValidation(x => x.AutomaticValidationEnabled = false);
@@ -98,10 +105,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(c => { c.SwaggerEndpoint("./v1/swagger.json", " API V1") ; });
 }
 
-app.UseCors(x => x
-        .AllowAnyOrigin()
-        .AllowAnyMethod()
-        .AllowAnyHeader());
+app.UseCors("CorsPolicy");
 
     
 // custom jwt auth middleware
@@ -110,6 +114,8 @@ app.UseMiddleware<JwtMiddleWare>();
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+app.UseAuthentication();
 
 app.MapControllers();
 

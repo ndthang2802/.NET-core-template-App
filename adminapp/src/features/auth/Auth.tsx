@@ -4,12 +4,14 @@ import { useSelector } from 'react-redux';
 import { authSelector , LoginAsync } from './authSlice';
 
 export function Auth() {
-  const { currentUser, isLoading, error, isAuth } = useSelector(authSelector)
+  const { currentUser, isLoading, error, isAuth, token } = useSelector(authSelector)
   const dispatch = useAppDispatch();
   console.log("Current user: " ,currentUser);
   console.log('Loading: ', isLoading);
   console.log('error: ',error);
   console.log('is Auth: ',isAuth);
+  console.log('token: ',token);
+
     const [usernameInput, setUsernameInput] = useState("");
     const [passwordInput, setPasswordInput] = useState("");
 
@@ -31,3 +33,5 @@ export function Auth() {
     </div>
   );
 }
+
+

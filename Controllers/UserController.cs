@@ -17,7 +17,8 @@ public class UserController : ApiControllerBase
     [HttpPost("auth")]
     public async Task<ActionResult<Result>> Auth(LoginUserCommand command)
     {
-        return await Mediator.Send(command);
+        var res = await Mediator.Send(command);
+        return StatusCode((int)res.StatusCode, res);
     }
     [Authorize( roles: new string[] { "Administrator"})]
     [HttpGet("all")]

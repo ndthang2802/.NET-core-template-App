@@ -2,11 +2,16 @@ using StartFromScratch.Models;
 using StartFromScratch.Entities;
 using StartFromScratch.Authorization;
 using Microsoft.EntityFrameworkCore;
+
 namespace StartFromScratch.Services;
 public interface IUserService : IBaseService<User>
 {
-    public Task<object?> Authenticate(string username, string password);
+    public Task<LoginResponse?> Authenticate(string username, string password);
     public Task<List<Policy>> GetPoliciesOfUser(User user);
+}
+public record LoginResponse {
+    public User user {get;set;} = new User();
+    public string access_token {get;set;} = "";
 }
 public class UserService :  BaseService<User>, IUserService
 {
@@ -17,13 +22,13 @@ public class UserService :  BaseService<User>, IUserService
         _context = context;
         _jwtUtil = jwtUtil;
     }
-    public async Task<object?> Authenticate(string username, string password)
+    public async Task<LoginResponse?> Authenticate(string username, string password)
     {
         var user = await _context.Users.FirstOrDefaultAsync(x => x.Username == username, new CancellationToken());
         if (user == null || !BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
             return null;
         var jwtToken = _jwtUtil.GenerateToken(user);
-        return  new { access_token = jwtToken, user = user };
+        return  new LoginResponse { access_token = jwtToken, user = user };
     }
     public async Task<List<Policy>> GetPoliciesOfUser(User user)
     {

@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { AppThunk, RootState } from '../../app/store';
+import { AppThunk, RootState } from '@app/store';
 import { fetchAdminLogin, LoginData } from './authAPI'
 // export interface AuthError {
 //     message: string[]
@@ -8,7 +8,8 @@ export interface AuthState {
     isAuth: boolean
     currentUser?: CurrentUser
     isLoading: boolean
-    error?: string []
+    error?: string [],
+    token : string
 }
 export interface CurrentUser {
     Id: number
@@ -17,15 +18,16 @@ export interface CurrentUser {
 export const initialState: AuthState = {
     isAuth: false,
     isLoading: false,
+    token : ""
 }
 
 export const LoginAsync = createAsyncThunk<CurrentUser, LoginData , { rejectValue: string [] }>(
     'user/login',
     async (data  , thunkApi) => {
       const response = await fetchAdminLogin(data);
-      if (response.responses && response.responses.data.user)
+      if (response.responses && response.responses.data.user && response.responses.data.access_token)
       {
-        
+        thunkApi.dispatch(setAuthSuccess(response.responses.data.access_token))
         return (response.responses.data.user) as CurrentUser
       }
       else {
@@ -43,9 +45,8 @@ export const authSlice = createSlice({
         setLoading: (state, {payload}: PayloadAction<boolean>) => {
             state.isLoading = payload
         },
-        setAuthSuccess: (state, { payload }: PayloadAction<CurrentUser>) => {
-            state.currentUser = payload
-            //state.isAuth = true
+        setAuthSuccess: (state, { payload }: PayloadAction<string>) => {
+            state.token = payload
         },
         setLogOut: (state) => {
             state.isAuth = false
