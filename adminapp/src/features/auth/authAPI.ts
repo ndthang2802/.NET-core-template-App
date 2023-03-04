@@ -26,6 +26,12 @@ export async function refreshToken() {
   }
 
 export async function getCurrentUserInformation() {
-    return await ( await fetch('http://localhost:5031/api/user/get-current-user-infor')).json()
+    return await ( await fetch('http://localhost:5031/api/user/get-current-user-infor', {
+        method : 'GET',
+        credentials: 'include',
+        headers : {
+            "Content-Type" : 'application/json'
+        }
+    })).json()
   }
   

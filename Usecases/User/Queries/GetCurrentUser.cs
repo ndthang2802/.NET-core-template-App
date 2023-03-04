@@ -19,6 +19,7 @@ public class GetCurrentUserCommandHandler : IRequestHandler<GetCurrentUserComman
     public async Task<Result> Handle(GetCurrentUserCommand request, CancellationToken cancellationToken)
     {  
         User? user =   _userService.User;
+        int? id = _userService.UserId;
         if (user != null)
         {
             BaseReponse reponse = new BaseReponse {

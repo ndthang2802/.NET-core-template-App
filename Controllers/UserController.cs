@@ -61,6 +61,7 @@ public class UserController : ApiControllerBase
         }
          return Unauthorized();
     }
+    [Authorize]
     [HttpGet("get-current-user-infor")]
     public async Task<ActionResult<Result>> GetCurrentUser([FromQuery] GetCurrentUserCommand command)
     {
