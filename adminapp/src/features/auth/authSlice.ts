@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { AppThunk, RootState } from '@app/store';
-import { fetchAdminLogin, LoginData } from './authAPI'
+import { fetchAdminLogin, getCurrentUserInformation, LoginData, refreshToken } from './authAPI'
 // export interface AuthError {
 //     message: string[]
 // }
@@ -9,7 +9,8 @@ export interface AuthState {
     currentUser?: CurrentUser
     isLoading: boolean
     error?: string [],
-    token : string
+    token : string,
+    readyToGetInfomation : boolean,
 }
 export interface CurrentUser {
     Id: number
@@ -18,7 +19,8 @@ export interface CurrentUser {
 export const initialState: AuthState = {
     isAuth: false,
     isLoading: false,
-    token : ""
+    token : "",
+    readyToGetInfomation : false,
 }
 
 export const LoginAsync = createAsyncThunk<CurrentUser, LoginData , { rejectValue: string [] }>(
@@ -32,6 +34,32 @@ export const LoginAsync = createAsyncThunk<CurrentUser, LoginData , { rejectValu
       }
       else {
         return thunkApi.rejectWithValue((response.errors) as string[]);
+      }
+      
+    }
+  );
+
+  export const GetUserInformation = createAsyncThunk<CurrentUser, any , { rejectValue: string [] }>(
+    'user/getInformation',
+    async ( data ,thunkApi) => {
+      const response = await getCurrentUserInformation();
+      if (response.responses && response.responses.data)
+      {
+        return (response.responses.data) as CurrentUser
+      }
+      else {
+        return thunkApi.rejectWithValue((response.errors) as string[]);
+      }
+      
+    }
+  );
+  export const fetchRefreshToken = createAsyncThunk(
+    'user/refreshtoken',
+    async ( data ,thunkApi) => {
+      const response = await refreshToken();
+      if (response == 200)
+      {
+        thunkApi.dispatch(setRefreshTokenSuccess(true));
       }
       
     }
@@ -56,6 +84,9 @@ export const authSlice = createSlice({
             state.error = payload
             state.isAuth = false
         },
+        setRefreshTokenSuccess: (state, {payload}: PayloadAction<boolean>) => {
+          state.readyToGetInfomation = payload
+        }
     },
     extraReducers: (builder) => {
         builder
@@ -72,9 +103,24 @@ export const authSlice = createSlice({
             state.isLoading = false;
             state.isAuth = false;
             state.error = action.payload
+          }) //
+          .addCase(GetUserInformation.pending, (state) => {
+            state.isLoading = true;
+            state.isAuth = false;
+          })
+          .addCase(GetUserInformation.fulfilled, (state,action) => {
+            state.isLoading = false;
+            state.isAuth = true;
+            state.currentUser = action.payload
+          })
+          .addCase(GetUserInformation.rejected, (state, action) => {
+            state.isLoading = false;
+            state.isAuth = false;
+            state.error = action.payload;
           });
+          
       },
 })
-export const { setAuthSuccess, setLogOut, setLoading, setAuthFailed} = authSlice.actions
+export const { setAuthSuccess, setLogOut, setLoading, setAuthFailed ,setRefreshTokenSuccess} = authSlice.actions
 export const authSelector = (state: RootState) => state.auth
 export default authSlice.reducer

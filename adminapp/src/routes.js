@@ -9,10 +9,37 @@ import LoginPage from './pages/LoginPage';
 import Page404 from './pages/Page404';
 import ProductsPage from './pages/ProductsPage';
 import DashboardAppPage from './pages/DashboardAppPage';
+import { useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import { GetUserInformation, fetchRefreshToken, authSelector } from 'features/auth/authSlice';
+import { useAppDispatch } from './app/hooks';
+import { useNavigate } from 'react-router-dom';
 
 // ----------------------------------------------------------------------
 
 export default function Router() {
+
+
+  //const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const { readyToGetInfomation, isAuth } = useSelector(authSelector);
+  // useEffect(()=>{
+  //   dispatch(fetchRefreshToken())
+  // }, [])
+  // useEffect(()=>{
+  //   dispatch(GetUserInformation({}))
+  // },[readyToGetInfomation])
+  useEffect(()=>{
+    if (isAuth){
+      navigate('/dashboard', { replace: true });
+    }
+    else {
+      navigate('/login', { replace: true });
+    }
+  },[isAuth])
+
+  console.log(isAuth)
+
   const routes = useRoutes([
     {
       path: '/dashboard',

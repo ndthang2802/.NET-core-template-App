@@ -20,10 +20,32 @@ import ThemeProvider from './theme';
 // components
 import { StyledChart } from './components/chart';
 import ScrollToTop from './components/scroll-to-top';
+import { useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import { GetUserInformation, fetchRefreshToken, authSelector } from 'features/auth/authSlice';
+import { useAppDispatch } from './app/hooks';
+
 // ----------------------------------------------------------------------
 
 export default function App() {
-  
+  const dispatch = useAppDispatch();
+  // const navigate = useNavigate();
+  const { readyToGetInfomation, isAuth } = useSelector(authSelector);
+  useEffect(()=>{
+    dispatch(fetchRefreshToken())
+  }, [])
+  useEffect(()=>{
+    if (readyToGetInfomation)
+      dispatch(GetUserInformation({}))
+  },[readyToGetInfomation])
+  // useEffect(()=>{
+  //   if (isAuth){
+  //     navigate('/dashboard', { replace: true });
+  //   }
+  //   else {
+  //     navigate('/login', { replace: true });
+  //   }
+  // },[isAuth])
   return (
     <HelmetProvider>
       <BrowserRouter>

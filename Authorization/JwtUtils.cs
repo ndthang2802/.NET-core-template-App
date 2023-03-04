@@ -10,6 +10,7 @@ public interface IJwtUtil
     public string GenerateToken(User _user);
     public string GenerateRefeshToken (User _user);
     public int? ValidationAndGetUserIdFromToken(string token);
+    public int? ValidationAndGetUserIdFromRefreshToken(string token);
 }
 public class JwtUtil : IJwtUtil
 {
@@ -57,6 +58,26 @@ public class JwtUtil : IJwtUtil
             tokenHandler.ValidateToken(token, new TokenValidationParameters {
                 ValidateIssuerSigningKey = true,
                 IssuerSigningKey = new SymmetricSecurityKey(secretKey),
+                ValidateIssuer = false,
+                ValidateAudience = false,
+                ClockSkew = TimeSpan.Zero,
+            }, out SecurityToken validatedToken) ;  
+            var jwtToken = (JwtSecurityToken)validatedToken;
+            var userID = int.Parse(jwtToken.Claims.First(x => x.Type == "ID").Value);
+            return userID;
+        }
+        catch {
+            return null;
+        }
+    }
+
+    public int? ValidationAndGetUserIdFromRefreshToken(string token)
+    {
+        var tokenHandler = new JwtSecurityTokenHandler();
+        try {
+            tokenHandler.ValidateToken(token, new TokenValidationParameters {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(secretrefreshKey),
                 ValidateIssuer = false,
                 ValidateAudience = false,
                 ClockSkew = TimeSpan.Zero,

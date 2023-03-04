@@ -11,7 +11,7 @@ public interface ICurrentUserService
     public bool IsCurrentUserHaveGreaterRole (IList<Role> request, IList<Role> current);
     public bool IsCurrentUserCanEdit(int targetId);
     bool IsAdmin {get;}
-    public  void HttpContextSignin(string token);
+    public  void HttpContextSignin(string token, string refreshToken);
 }
 
 public class CurrentUserService : ICurrentUserService
@@ -40,17 +40,17 @@ public class CurrentUserService : ICurrentUserService
         return _user != null && ( _user.Id == targetId );
     }
 
-    public void HttpContextSignin(string token){
-        //var claimsIdentity = new ClaimsIdentity(claim, "Cookies");
-        //var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+    public void HttpContextSignin(string token, string resfreshToken){
          if(_httpContextAccessor.HttpContext != null ){
             var cookieOptions = new Microsoft.AspNetCore.Http.CookieOptions()
             {
-                HttpOnly = true, IsEssential = true, //<- there
+                HttpOnly = true, 
+                IsEssential = true, 
                 Expires = DateTime.Now.AddMonths(1), 
+                SameSite = SameSiteMode.Strict
             };
-            _httpContextAccessor.HttpContext.Response.Cookies.Append("X-Access-Token", token, new CookieOptions() { HttpOnly = true, SameSite = SameSiteMode.Strict });
-            _httpContextAccessor.HttpContext.Response.Cookies.Append("X-Refresh-Token", token, new CookieOptions() { HttpOnly = true, SameSite = SameSiteMode.Strict });
+            _httpContextAccessor.HttpContext.Response.Cookies.Append("X-Access-Token", token, cookieOptions);
+            _httpContextAccessor.HttpContext.Response.Cookies.Append("X-Refresh-Token", resfreshToken, cookieOptions);
          }
 
     }

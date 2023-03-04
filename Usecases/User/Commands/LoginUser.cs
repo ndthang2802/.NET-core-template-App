@@ -41,13 +41,7 @@ public class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, Result>
         LoginResponse? result =  await _userService.Authenticate(request.Username,request.Password);
         if (result != null)
         {
-
-            // var claim = new Claim[]
-            // {
-            //     new Claim("Token", result.access_token)
-            // };
-
-            _currentuser.HttpContextSignin(result.access_token);
+            _currentuser.HttpContextSignin(result.access_token, result.refresh_token);
             BaseReponse reponse = new BaseReponse {
                 Message = "Login User Success!",
                 Data = result

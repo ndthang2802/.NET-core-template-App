@@ -52,7 +52,8 @@ builder.Services.AddMediatR(Assembly.GetExecutingAssembly());
 
 builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
- builder.Services.AddCors(options =>
+
+builder.Services.AddCors(options =>
             {
                 options.AddPolicy("CorsPolicy",
                     builder => builder.WithOrigins("http://localhost:3000") 
@@ -106,6 +107,21 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors("CorsPolicy");
+
+app.Use(async (context, next) =>
+{
+     if (context.Request.Cookies.ContainsKey("X-Access-Token"))
+        {
+            if (String.IsNullOrEmpty(context.Request.Headers["Authorization"].ToString()))
+            {
+                context.Request.Headers.Add("Authorization", "Bearer " + context.Request.Cookies["X-Access-Token"]);
+            }
+            else {
+                context.Request.Headers["Authorization"] = "Bearer " + context.Request.Cookies["X-Access-Token"];
+            }
+        }
+    await next();
+});
 
     
 // custom jwt auth middleware

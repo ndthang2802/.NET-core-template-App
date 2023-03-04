@@ -22,11 +22,7 @@ export default function LoginForm() {
     dispatch(LoginAsync({Username : username, Password : password}))
   };
 
-  useEffect(()=>{
-    if (isAuth){
-      navigate('/dashboard', { replace: true });
-    }
-  },[isAuth])
+  
 
 
   return (

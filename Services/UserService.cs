@@ -8,10 +8,13 @@ public interface IUserService : IBaseService<User>
 {
     public Task<LoginResponse?> Authenticate(string username, string password);
     public Task<List<Policy>> GetPoliciesOfUser(User user);
+    public Task<string?> RefreshToken(string? refreshToken);
 }
 public record LoginResponse {
     public User user {get;set;} = new User();
     public string access_token {get;set;} = "";
+    public string refresh_token {get;set;} = "";
+
 }
 public class UserService :  BaseService<User>, IUserService
 {
@@ -28,7 +31,8 @@ public class UserService :  BaseService<User>, IUserService
         if (user == null || !BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
             return null;
         var jwtToken = _jwtUtil.GenerateToken(user);
-        return  new LoginResponse { access_token = jwtToken, user = user };
+        var resfreshToken = _jwtUtil.GenerateRefeshToken(user);
+        return  new LoginResponse { access_token = jwtToken,refresh_token = resfreshToken ,user = user };
     }
     public async Task<List<Policy>> GetPoliciesOfUser(User user)
     {
@@ -42,5 +46,23 @@ public class UserService :  BaseService<User>, IUserService
             res.Concat(user_rolesList[i].PoliciesList ??  new List<Policy>());
         }
         return new HashSet<Policy>(res).ToList();
+    }
+    public async Task<string?> RefreshToken(string? refreshToken){
+        if(string.IsNullOrEmpty(refreshToken))
+        {
+            return null;
+        }
+        int? IdUser = _jwtUtil.ValidationAndGetUserIdFromRefreshToken(refreshToken);
+        if(IdUser != null)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == IdUser, new CancellationToken());
+            if (user == null)
+                return null;
+            var jwtToken = _jwtUtil.GenerateToken(user);
+            return jwtToken;
+        }
+        else {
+            return null;
+        }
     }
 }
