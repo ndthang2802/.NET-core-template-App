@@ -41,17 +41,17 @@ public class UpdateUserCommandValidator : AbstractValidator<UpdateUserCommand>
     public UpdateUserCommandValidator(DataContext context)
     {
         _context = context;
-        When(v => v.Username is not null, () => {
-            RuleFor(v => v.Username)
-                        .MaximumLength(30).WithMessage("Username must not exceed 30 characters.")
-                        .MustAsync(BeUniqueUsername).WithMessage("The specified username already exists.");
-        });
-        When(v => v.Email is not null, () => {
-            RuleFor(v => v.Email)
-                        .NotEmpty().NotNull().WithMessage("Email is required.")
-                        .MaximumLength(100).WithMessage("Username must not exceed 30 characters.") // Change to format of email
-                        .MustAsync(BeUniqueEmail).WithMessage("The specified username already exists.");
-        });
+        // When(v => v.Username is not null, () => {
+        //     RuleFor(v => v.Username)
+        //                 .MaximumLength(30).WithMessage("Username must not exceed 30 characters.")
+        //                 .MustAsync(BeUniqueUsername).WithMessage("The specified username already exists.");
+        // });
+        // When(v => v.Email is not null, () => {
+        //     RuleFor(v => v.Email)
+        //                 .NotEmpty().NotNull().WithMessage("Email is required.")
+        //                 .MaximumLength(100).WithMessage("Username must not exceed 30 characters.") // Change to format of email
+        //                 .MustAsync(BeUniqueEmail).WithMessage("The specified username already exists.");
+        // });
         
     }
 

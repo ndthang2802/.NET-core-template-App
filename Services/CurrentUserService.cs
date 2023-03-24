@@ -32,7 +32,7 @@ public class CurrentUserService : ICurrentUserService
 
     public bool IsCurrentUserHaveGreaterRole (IList<Role> request, IList<Role> current)
     {
-        return request.All(x => current.Contains(x) ||   current.Any(c => c.Level >= x.Level ));
+        return request.All(x => current.Contains(x) ||   current.Any(c => c.Level < x.Level ));
     }
     public bool IsCurrentUserCanEdit(int targetId)
     {

@@ -31,10 +31,13 @@ import ContactMailIcon from '@mui/icons-material/ContactMail';
 import MoreTimeIcon from '@mui/icons-material/MoreTime';
 import BadgeIcon from '@mui/icons-material/Badge';
 // sections
-import { UserListHead, UserListToolbar, AddUserForm } from '../sections/@dashboard/user';
+import { UserListHead, UserListToolbar, AddUserForm, ChangeUserRoleForm } from '../sections/@dashboard/user';
+
 import PhoneIcon from '@mui/icons-material/Phone';
 import BusinessIcon from '@mui/icons-material/Business';
 import { userSelector, GetAllUser } from '../features/user/useSlice';
+import { GetAllLowerRoleOfUser, roleSelector } from '../features/role_policy/role_policySlice';
+
 import { useAppDispatch } from '../app/hooks';
 import { useSelector } from 'react-redux';
 import CachedIcon from '@mui/icons-material/Cached';
@@ -94,17 +97,34 @@ export default function UserPage() {
   const [filterName, setFilterName] = useState('');
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [editUserRoleRowChoose,setEditUserRoleRowChoose] = useState({});
+
 
   const [openAddUserForm,setOpenAddUserForm] = useState(false);
+  const [openChangeUserRoleForm,setOpenChangeUserRoleForm] = useState(false);
+
 
   const dispatch = useAppDispatch();
+  const { USERLIST } = useSelector(userSelector);
+  const { ROLELIST } = useSelector(roleSelector);
+
 
   useEffect(()=> {
-    dispatch(GetAllUser());
-  },[])
+    if (!USERLIST.length){
+      dispatch(GetAllUser());
+    }
+    
+  },[USERLIST, USERLIST.length])
 
-  const { USERLIST } = useSelector(userSelector);
-  const handleOpenMenu = (event) => {
+  useEffect(()=> {
+    if(!ROLELIST.length)
+    {
+      dispatch(GetAllLowerRoleOfUser());
+    }
+  },[ROLELIST, ROLELIST.length])
+
+  const handleOpenMenu = (event, row) => {
+    setEditUserRoleRowChoose(row);
     setOpen(event.currentTarget);
   };
 
@@ -165,11 +185,16 @@ export default function UserPage() {
   const onAddUserButtonClick = () => {
     setOpenAddUserForm(true);
   }
+  const onChangeUserRoleButtonClick = () => {
+    setOpenChangeUserRoleForm(true);
+    handleCloseMenu()
+  }
   
 
   return (
     <>
       <AddUserForm openAddUserForm={openAddUserForm} setOpenAddUserForm={setOpenAddUserForm} />
+      <ChangeUserRoleForm openChangeUserRoleForm={openChangeUserRoleForm} setOpenChangeUserRoleForm={setOpenChangeUserRoleForm} values = {{...editUserRoleRowChoose, roles : editUserRoleRowChoose?.roles ? editUserRoleRowChoose?.roles.split(",") : [] }} />
       <Helmet>
         <title> User | Minimal UI </title>
       </Helmet>
@@ -232,13 +257,13 @@ export default function UserPage() {
                         <TableCell align="left">{(new Date(created)).toLocaleString()}</TableCell>
 
                         <TableCell align="right">
-                          <IconButton size="large" color="inherit" onClick={handleOpenMenu}>
+                          <IconButton size="large" color="inherit" onClick={(e) => handleOpenMenu(e, row)}>
                             <Iconify icon={'eva:more-vertical-fill'} />
                           </IconButton>
                         </TableCell>
                       </TableRow>
                        <TableRow hover>
-                          <TableCell colSpan={5}><b>Roles:</b>&nbsp;&nbsp;{roles === "" ?  <Chip color="warning" label={"Unassigned"} />  : roles.split(",").map(role => <Chip color="info" label={role} />)}</TableCell>
+                          <TableCell colSpan={5}><b>Roles:</b>&nbsp;&nbsp;{roles === "" ?  <Chip color="warning"  label={"Unassigned"} />  : roles.split(",").map((role,idx) => <Chip  sx={{ mr : 1}} key = {idx} color="info" label={role} />)}</TableCell>
                         </TableRow>
                         </Fragment>
                     );
@@ -311,7 +336,7 @@ export default function UserPage() {
           <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
           Edit
         </MenuItem>
-        <MenuItem>
+        <MenuItem onClick={onChangeUserRoleButtonClick}>
           <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
           Change role
         </MenuItem>

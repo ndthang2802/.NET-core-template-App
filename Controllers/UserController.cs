@@ -69,4 +69,12 @@ public class UserController : ApiControllerBase
         return StatusCode((int)res.StatusCode, res);
     }
 
+    [Authorize]
+    [HttpPost("update-roles")]
+    public async Task<ActionResult<Result>> UpdateUserRole([FromBody] AssignRoleToUserCommand command)
+    {
+        var res = await Mediator.Send(command);
+        return StatusCode((int)res.StatusCode, res);
+    }
+
 }

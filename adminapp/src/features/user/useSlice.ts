@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { AppThunk, RootState } from '@app/store';
-import { AddUserSchmema, fetchAddUser, fetchAllUserList } from './userAPI'
+import { AddUserSchmema, ChangeUserRoleSchema, fetchAddUser, fetchAllUserList, fetchChangeUserRole } from './userAPI'
 
 export interface UserListState {
     isLoading: boolean
@@ -9,6 +9,8 @@ export interface UserListState {
     USERLIST : UserList [],
     AddUserState : string,
     AddUserErrors : []
+    ChangeUserRoleState : string
+    ChangeUserRoleError : [],
 }
 export interface UserList {
     username : string,
@@ -25,7 +27,9 @@ export const initialState: UserListState = {
     GetUSERLISTerror :  [],
     USERLIST : [] ,
     AddUserState : "wait",
-    AddUserErrors : []
+    AddUserErrors : [],
+    ChangeUserRoleState : "wait",
+    ChangeUserRoleError : []
 }
 
 
@@ -59,6 +63,21 @@ export const initialState: UserListState = {
     }
   );
 
+  export const ChangeUserRole = createAsyncThunk< boolean , ChangeUserRoleSchema , { rejectValue: string [] }>(
+    'user/update-roles',
+    async ( data ,thunkApi) => {
+      const response = await fetchChangeUserRole(data);
+      if (response.responses && response.succeeded)
+      {
+        return  true;
+      }
+      else {
+        return thunkApi.rejectWithValue((response.errors) as string[]);
+      }
+      
+    }
+  );
+
 
 export const userSlice = createSlice({
     name: 'user',
@@ -66,7 +85,10 @@ export const userSlice = createSlice({
     reducers: {
       setFinishAddUser: (state) => {
         state.AddUserState = "wait"
-    },
+      },
+      setFinishChangeUserRole: (state) => {
+      state.ChangeUserRoleState = "wait"
+      }
     },
     extraReducers: (builder) => {
         builder
@@ -90,10 +112,20 @@ export const userSlice = createSlice({
           })
           .addCase(AddUser.rejected, (state) => {
             state.AddUserState = "fail"
-          });
+          })// change role
+          .addCase(ChangeUserRole.pending, (state) => {
+            state.AddUserState = "pending";
+          })
+          .addCase(ChangeUserRole.fulfilled, (state,action) => {
+            state.AddUserState = action ? "success" : "fail"
+          })
+          .addCase(ChangeUserRole.rejected, (state) => {
+            state.AddUserState = "fail"
+          })
+          ;
           
       },
 })
-export const { setFinishAddUser } = userSlice.actions
+export const { setFinishAddUser , setFinishChangeUserRole } = userSlice.actions
 export const userSelector = (state: RootState) => state.user
 export default userSlice.reducer

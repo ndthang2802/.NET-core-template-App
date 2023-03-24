@@ -101,11 +101,14 @@ export default function UserPage() {
 
   const dispatch = useAppDispatch();
 
-  useEffect(()=> {
-    dispatch(GetAllLowerRoleOfUser());
-  },[])
-
   const { ROLELIST } = useSelector(roleSelector);
+  useEffect(()=> {
+    if(!ROLELIST.length)
+    {
+      dispatch(GetAllLowerRoleOfUser());
+    }
+  },[ROLELIST, ROLELIST.length])
+
   const handleOpenMenu = (event, row) => {
     setEditRowChoose(row);
     setOpen(event.currentTarget);
