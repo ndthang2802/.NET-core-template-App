@@ -38,14 +38,7 @@ export default function App() {
     if (readyToGetInfomation)
       dispatch(GetUserInformation({}))
   },[readyToGetInfomation])
-  // useEffect(()=>{
-  //   if (isAuth){
-  //     navigate('/dashboard', { replace: true });
-  //   }
-  //   else {
-  //     navigate('/login', { replace: true });
-  //   }
-  // },[isAuth])
+  
   return (
     <HelmetProvider>
       <BrowserRouter>

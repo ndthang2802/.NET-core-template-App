@@ -1,10 +1,12 @@
+
+
 export interface LoginData {
     Username : string,
     Password : string
 }
 
 export async function fetchAdminLogin(data : LoginData) {
-    return await ( await fetch('http://localhost:5031/api/user/auth', {
+    return await ( await fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/user/auth`, {
         method : 'POST',
         credentials: 'include',
         headers : {
@@ -15,7 +17,7 @@ export async function fetchAdminLogin(data : LoginData) {
   }
 
 export async function refreshToken() {
-    let res = await fetch('http://localhost:5031/api/user/refesh-token', {
+    let res = await fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/user/refesh-token`, {
         method : 'POST',
         credentials: 'include',
         headers : {
@@ -26,7 +28,7 @@ export async function refreshToken() {
   }
 
 export async function getCurrentUserInformation() {
-    return await ( await fetch('http://localhost:5031/api/user/get-current-user-infor', {
+    return await ( await fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/user/get-current-user-infor`, {
         method : 'GET',
         credentials: 'include',
         headers : {

@@ -14,15 +14,24 @@ namespace StartFromScratch.Usecases.Users.Commands;
 public record UpdateUserCommand : IRequest<Result>, IMapTo<User>
 {
     public int Id {get; init;}
-    public string? Username { get; init; }
+    //public string? Username { get; init; }
     public string? PhoneNumber { get; init; }
     public string? Address { get; init; }
-    public string? Email { get; init; }
+    //public string? Email { get; init; }
     public string? Password { get; init; }
-
     public void Mapping(Profile profile)
     {
-        profile.CreateMap<UpdateUserCommand, User>().ForMember(d => d.PasswordHash, opt => opt.MapFrom(s => BCrypt.Net.BCrypt.HashPassword(s.Password)));
+        profile.CreateMap<UpdateUserCommand, User>()
+        .ForMember(d => d.PasswordHash, opt => opt.MapFrom(s => BCrypt.Net.BCrypt.HashPassword(s.Password)))
+        .ForMember(d => d.PhoneNumber, opt => {
+                        opt.Condition(src => src.PhoneNumber != null) ;
+                        opt.MapFrom(s =>  s.PhoneNumber);
+                    })
+        .ForMember(d => d.Address, opt => {
+                        opt.Condition(src => src.Address != null) ;
+                        opt.MapFrom(s =>  s.Address);
+                    })
+        ;
     }
 }
 public class UpdateUserCommandValidator : AbstractValidator<UpdateUserCommand>

@@ -1,7 +1,7 @@
 import { Helmet } from 'react-helmet-async';
 import { filter } from 'lodash';
 import { sentenceCase } from 'change-case';
-import { useEffect,Fragment, useState } from 'react';
+import { useEffect, useState } from 'react';
 // @mui
 import {
   Card,
@@ -21,31 +21,31 @@ import {
   IconButton,
   TableContainer,
   TablePagination,
-  Chip,
 } from '@mui/material';
 // components
 import Label from '../components/label';
 import Iconify from '../components/iconify';
 import Scrollbar from '../components/scrollbar';
-import ContactMailIcon from '@mui/icons-material/ContactMail';
 import MoreTimeIcon from '@mui/icons-material/MoreTime';
-import BadgeIcon from '@mui/icons-material/Badge';
+import VpnKeyIcon from '@mui/icons-material/VpnKey';
+import DescriptionIcon from '@mui/icons-material/Description';
+import PolicyIcon from '@mui/icons-material/Policy';
+import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
 // sections
-import { UserListHead, UserListToolbar, AddUserForm } from '../sections/@dashboard/user';
-import PhoneIcon from '@mui/icons-material/Phone';
-import BusinessIcon from '@mui/icons-material/Business';
-import { userSelector, GetAllUser } from '../features/user/useSlice';
+import {UserListToolbar } from '../sections/@dashboard/user';
+import {RoleTableHead, EditRoleForm} from '../sections/@dashboard/role_policy';
+import { roleSelector, GetAllLowerRoleOfUser} from '../features/role_policy/role_policySlice';
 import { useAppDispatch } from '../app/hooks';
 import { useSelector } from 'react-redux';
 import CachedIcon from '@mui/icons-material/Cached';
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: 'username', label: 'Username', alignRight: false, icon : <BadgeIcon /> },
-  { id: 'phoneNumber', label: 'Phone', alignRight: false , icon : <PhoneIcon />},
-  { id: 'address', label: 'Address', alignRight: false , icon : <BusinessIcon />},
-  { id: 'email', label: 'E-mail', alignRight: false, icon : <ContactMailIcon /> },
-  { id: 'created', label: 'Date created', alignRight: false, icon : <MoreTimeIcon /> },
+  { id: 'code', label: 'Code', align: "left", icon : <VpnKeyIcon /> },
+  { id: 'description', label: 'Description', align: "left" , icon : <DescriptionIcon />},
+  { id: 'level', label: 'Level', align: "center" , icon : <FormatListNumberedIcon />},
+  { id: 'policies', label: 'Policies', align: "center", icon : <PolicyIcon /> },
+  { id: 'created', label: 'Date created', align: "left", icon : <MoreTimeIcon /> },
   { id: '' },
 ];
 
@@ -75,7 +75,7 @@ function applySortFilter(array, comparator, query) {
     return a[1] - b[1];
   });
   if (query) {
-    return filter(array, (_user) => _user.username.toLowerCase().indexOf(query.toLowerCase()) !== -1);
+    return filter(array, (_role) => _role.code.toLowerCase().indexOf(query.toLowerCase()) !== -1);
   }
   return stabilizedThis.map((el) => el[0]);
 }
@@ -95,16 +95,19 @@ export default function UserPage() {
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
-  const [openAddUserForm,setOpenAddUserForm] = useState(false);
+  const [openEditRoleForm,setOpenEditRoleForm] = useState(false);
+
+  const [editRowChoose,setEditRowChoose] = useState({});
 
   const dispatch = useAppDispatch();
 
   useEffect(()=> {
-    dispatch(GetAllUser());
+    dispatch(GetAllLowerRoleOfUser());
   },[])
 
-  const { USERLIST } = useSelector(userSelector);
-  const handleOpenMenu = (event) => {
+  const { ROLELIST } = useSelector(roleSelector);
+  const handleOpenMenu = (event, row) => {
+    setEditRowChoose(row);
     setOpen(event.currentTarget);
   };
 
@@ -120,7 +123,7 @@ export default function UserPage() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = USERLIST.map((n) => n.name);
+      const newSelecteds = ROLELIST.map((n) => n.code);
       setSelected(newSelecteds);
       return;
     }
@@ -156,31 +159,30 @@ export default function UserPage() {
     setFilterName(event.target.value);
   };
 
-  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERLIST.length) : 0;
+  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - ROLELIST.length) : 0;
 
-  const filteredUsers = applySortFilter(USERLIST, getComparator(order, orderBy), filterName);
+  const filteredRoles = applySortFilter(ROLELIST, getComparator(order, orderBy), filterName);
 
-  const isNotFound = !filteredUsers.length && !!filterName;
+  const isNotFound = !filteredRoles.length && !!filterName;
 
-  const onAddUserButtonClick = () => {
-    setOpenAddUserForm(true);
+  const onEditRoleButtonClick = () => {
+    setOpenEditRoleForm(true);
   }
-  
 
   return (
     <>
-      <AddUserForm openAddUserForm={openAddUserForm} setOpenAddUserForm={setOpenAddUserForm} />
+      <EditRoleForm openEditRoleForm={openEditRoleForm} setOpenEditRoleForm={setOpenEditRoleForm} values = {{...editRowChoose, policies : editRowChoose?.policies ? editRowChoose?.policies.split(",") : [] }} />
       <Helmet>
-        <title> User | Minimal UI </title>
+        <title> Role & Policies | Minimal UI </title>
       </Helmet>
 
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" style={{display: 'flex',alignItems: 'center',flexWrap: 'wrap'}} gutterBottom>
-            User&nbsp;&nbsp;<CachedIcon fontSize='large' onClick={()=>dispatch(GetAllUser())} style={{ cursor : 'pointer'}} />
+            Role & Policies&nbsp;&nbsp;<CachedIcon fontSize='large' onClick={()=>dispatch(GetAllLowerRoleOfUser())} style={{ cursor : 'pointer'}} />
           </Typography>
-          <Button variant="contained" onClick={onAddUserButtonClick} startIcon={<Iconify icon="eva:plus-fill" />}>
-            New User
+          <Button variant="contained" onClick={onEditRoleButtonClick} startIcon={<Iconify icon="eva:plus-fill" />}>
+            New Role
           </Button>
         </Stack>
 
@@ -188,59 +190,53 @@ export default function UserPage() {
           <UserListToolbar numSelected={selected.length} filterName={filterName} onFilterName={handleFilterByName} />
 
           <Scrollbar>
-            <TableContainer sx={{ minWidth: 800 }}>
+            <TableContainer sx={{ minWidth: 900 }}>
               <Table>
-                <UserListHead
+                <RoleTableHead
                   order={order}
                   orderBy={orderBy}
                   headLabel={TABLE_HEAD}
-                  rowCount={USERLIST.length}
+                  rowCount={ROLELIST.length}
                   numSelected={selected.length}
                   onRequestSort={handleRequestSort}
                   onSelectAllClick={handleSelectAllClick}
                 />
                 <TableBody>
-                  {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => {
-                    const { id, username, phoneNumber, address, email,roles, avatarUrl,created, isVerified } = row;
-                    const selectedUser = selected.indexOf(username) !== -1;
+                  {filteredRoles.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => {
+                    const { id, code, description, level,created, policies } = row;
+                    const selectedUser = selected.indexOf(code) !== -1;
 
                     return (
-                      <Fragment key={id} >
-                      <TableRow hover  tabIndex={-1} role="checkbox" selected={selectedUser}>
-                        <TableCell rowSpan={2} padding="checkbox">
-                          <Checkbox checked={selectedUser} onChange={(event) => handleClick(event, username)} />
+                      <TableRow hover key={id} tabIndex={-1} role="checkbox" selected={selectedUser}>
+                        <TableCell padding="checkbox">
+                          <Checkbox checked={selectedUser} onChange={(event) => handleClick(event, code)} />
                         </TableCell>
 
-                        <TableCell rowSpan={2} component="th" scope="row" padding="none">
-                          <Stack direction="row" alignItems="center" spacing={2}>
-                            <Avatar alt={username} src={`/assets/images/avatars/avatar_${index + 1}.jpg`} />
+                        <TableCell >
                             <Typography variant="subtitle2" noWrap>
-                              {username}
+                              {code}
                             </Typography>
-                          </Stack>
                         </TableCell>
 
-                        <TableCell align="left">{phoneNumber}</TableCell>
+                        <TableCell width={'20%'} align="left">{description}</TableCell>
 
-                        <TableCell align="left">{address}</TableCell>
+                        <TableCell align="center">{level}</TableCell>
 
 
-                        <TableCell align="left">
+                        <TableCell width={'30%'} align="left">
                           {/* <Label color={('success' === 'banned' && 'error') || 'success'}>{sentenceCase('success')}</Label> */}
-                          {email}
+                          {policies?.split(",").map((policy,idx) => 
+                            <Label key={idx} color='success' style={{ marginRight : '.5rem', marginTop : '.5rem' }}>{sentenceCase(policy)}</Label>
+                        )}
                         </TableCell>
                         <TableCell align="left">{(new Date(created)).toLocaleString()}</TableCell>
 
                         <TableCell align="right">
-                          <IconButton size="large" color="inherit" onClick={handleOpenMenu}>
+                          <IconButton size="large" color="inherit" onClick={(e) => handleOpenMenu(e, row)}>
                             <Iconify icon={'eva:more-vertical-fill'} />
                           </IconButton>
                         </TableCell>
                       </TableRow>
-                       <TableRow hover>
-                          <TableCell colSpan={5}><b>Roles:</b>&nbsp;&nbsp;{roles === "" ?  <Chip color="warning" label={"Unassigned"} />  : roles.split(",").map(role => <Chip color="info" label={role} />)}</TableCell>
-                        </TableRow>
-                        </Fragment>
                     );
                   })}
                   {emptyRows > 0 && (
@@ -280,7 +276,7 @@ export default function UserPage() {
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={USERLIST.length}
+            count={ROLELIST.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}
@@ -307,14 +303,11 @@ export default function UserPage() {
           },
         }}
       >
-        <MenuItem>
-          <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
+        <MenuItem onClick={()=> {setOpenEditRoleForm(true); handleCloseMenu() ;}}>
+          <Iconify  icon={'eva:edit-fill'} sx={{ mr: 2 }} />
           Edit
         </MenuItem>
-        <MenuItem>
-          <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
-          Change role
-        </MenuItem>
+
         <MenuItem sx={{ color: 'error.main' }}>
           <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
           Delete

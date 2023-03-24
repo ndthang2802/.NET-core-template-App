@@ -33,22 +33,22 @@ public class AddUserCommandValidator : AbstractValidator<AddUserCommand>
         RuleFor(v => v.Username)
             .NotEmpty().NotNull().WithMessage("Username is required.")
             .MaximumLength(30).WithMessage("Username must not exceed 30 characters.")
-            .MustAsync(BeUniqueUsername).WithMessage("The specified username already exists.");
+            .MustAsync(BeUniqueUsername).WithMessage("The specified email already exists.");
         RuleFor(v => v.Email)
             .NotEmpty().NotNull().WithMessage("Email is required.")
             .MaximumLength(100).WithMessage("Username must not exceed 30 characters.") // Change to format of email
-            .MustAsync(BeUniqueEmail).WithMessage("The specified username already exists.");
+            .MustAsync(BeUniqueEmail).WithMessage("The specified email already exists.");
     }
 
     public async Task<bool> BeUniqueUsername(string username, CancellationToken cancellationToken)
     {
-        return await _context.Users
-            .AllAsync(l => l.Username == username, cancellationToken);
+        return !(await _context.Users
+            .AnyAsync(l => l.Username == username, cancellationToken));
     }
     public async Task<bool> BeUniqueEmail(string email, CancellationToken cancellationToken)
     {
-        return await _context.Users
-            .AllAsync(l => l.Email == email, cancellationToken);
+        return !(await _context.Users
+            .AnyAsync(l => l.Email == email, cancellationToken));
     }
 }
 

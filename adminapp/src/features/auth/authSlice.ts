@@ -10,11 +10,13 @@ export interface AuthState {
     isLoading: boolean
     error?: string [],
     token : string,
+    level? : number
     readyToGetInfomation : boolean,
 }
 export interface CurrentUser {
     Id: number
     Name: string
+    listRoles : any []
 }
 export const initialState: AuthState = {
     isAuth: false,
@@ -111,7 +113,8 @@ export const authSlice = createSlice({
           .addCase(GetUserInformation.fulfilled, (state,action) => {
             state.isLoading = false;
             state.isAuth = true;
-            state.currentUser = action.payload
+            state.currentUser = action.payload;
+            state.level = Math.min(...action.payload?.listRoles?.map(r => r.level))
           })
           .addCase(GetUserInformation.rejected, (state, action) => {
             state.isLoading = false;

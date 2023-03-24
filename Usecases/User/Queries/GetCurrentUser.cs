@@ -10,11 +10,16 @@ public class GetCurrentUserCommandHandler : IRequestHandler<GetCurrentUserComman
     private readonly DataContext _context;
     private readonly IMapper _mapper ;
     private readonly ICurrentUserService _userService;
-    public GetCurrentUserCommandHandler(DataContext context, ICurrentUserService userService, IMapper mapper)
+    private readonly IPolicyService _policyService;
+    private readonly IRoleService _roleService;
+
+    public GetCurrentUserCommandHandler(DataContext context, ICurrentUserService userService,IPolicyService policyService,IRoleService roleService, IMapper mapper)
     {
         _context = context;
         _mapper = mapper;
         _userService = userService;
+        _policyService = policyService;
+        _roleService = roleService;
     }
     public async Task<Result> Handle(GetCurrentUserCommand request, CancellationToken cancellationToken)
     {  
@@ -22,6 +27,8 @@ public class GetCurrentUserCommandHandler : IRequestHandler<GetCurrentUserComman
         int? id = _userService.UserId;
         if (user != null)
         {
+            user.Policies = await _policyService.GetAllPoliciesOfUser(user);
+            user.ListRoles = await _roleService.GetByCodes(user.Roles.Split(","));
             BaseReponse reponse = new BaseReponse {
                 Message = "Query Success!",
                 Data = user

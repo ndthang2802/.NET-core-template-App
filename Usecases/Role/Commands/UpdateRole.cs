@@ -21,8 +21,23 @@ public record UpdateRoleCommand : IRequest<Result>, IMapTo<Role>
 
     public void Mapping(Profile profile)
     {
-        profile.CreateMap<AddRoleCommand, Role>()
-                .ForMember(d => d.Policies, opt => opt.MapFrom(s =>  s.Policies != null ? string.Join(",", s.Policies) : ""));
+        profile.CreateMap<UpdateRoleCommand, Role>()
+                .ForMember(d => d.Policies, opt => {
+                        opt.Condition(src => src.Policies != null) ;
+                        opt.MapFrom(s =>  s.Policies != null ? string.Join(",", s.Policies) : "");
+                    })
+                .ForMember(d => d.Code, opt => {
+                        opt.Condition(src => !string.IsNullOrEmpty(src.Code)) ;
+                        opt.MapFrom(s =>  s.Code );
+                    })
+                .ForMember(d => d.Description, opt => {
+                        opt.Condition(src => !string.IsNullOrEmpty(src.Description)) ;
+                        opt.MapFrom(s =>  s.Description);
+                    })
+                .ForMember(d => d.Level, opt => {
+                        opt.Condition(src => src.Level != null) ;
+                        opt.MapFrom(s =>  s.Level );
+                    });
     }
 }
 public class UpdateRoleCommandValidator : AbstractValidator<UpdateRoleCommand>
@@ -36,7 +51,7 @@ public class UpdateRoleCommandValidator : AbstractValidator<UpdateRoleCommand>
             RuleFor(v => v.Code)
             .NotEmpty().NotNull().WithMessage("Role Code is required.")
             .MaximumLength(20).WithMessage("Role Code must not exceed 30 characters.")
-            .MustAsync(BeUniqueRoleCode).WithMessage("The specified Role code already exists.");
+            .MustAsync((model, code, cancellation) => BeUniqueRoleCode(code, model.Id, cancellation)).WithMessage("The specified Role code already exists.");
         });
         When(v => v.Description is not null, () => {
             RuleFor(v => v.Description)
@@ -45,10 +60,10 @@ public class UpdateRoleCommandValidator : AbstractValidator<UpdateRoleCommand>
         });
         
     }
-    public async Task<bool> BeUniqueRoleCode(string Code, CancellationToken cancellationToken)
+    public async Task<bool> BeUniqueRoleCode(string Code, int id, CancellationToken cancellationToken)
     {
         return await _context.Roles
-            .AllAsync(l => l.Code != Code, cancellationToken);
+            .AllAsync(l => l.Id != id ? l.Code != Code : true, cancellationToken);
     }
 }
 

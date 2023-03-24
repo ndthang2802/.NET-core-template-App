@@ -14,4 +14,6 @@ public class User : BaseAuditableEntity
     public string Roles {get; set;} = string.Empty;
     [NotMapped]
     public IList<Policy> Policies {get;set;} = new List<Policy>();
+    [NotMapped]
+    public IList<Role> ListRoles {get;set;} = new List<Role>();
 }

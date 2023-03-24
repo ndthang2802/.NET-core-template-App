@@ -21,5 +21,16 @@ public class RoleController : ApiControllerBase
     {
         return await Mediator.Send(command);
     }
+    [HttpGet("get")]
+    public async Task<ActionResult<Result>> GetLowerRole([FromQuery] GetAllLowerRolesCommand command)
+    {
+        return await Mediator.Send(command);
+    }
+
+    [HttpPost("update")]
+    public async Task<ActionResult<Result>> UpdateRole([FromBody] UpdateRoleCommand command)
+    {
+        return await Mediator.Send(command);
+    }
     
 }
