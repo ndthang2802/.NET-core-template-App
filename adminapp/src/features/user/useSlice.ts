@@ -5,7 +5,7 @@ import { AddUserSchmema, ChangeUserRoleSchema, fetchAddUser, fetchAllUserList, f
 export interface UserListState {
     isLoading: boolean
     GetUSERLISTerror?: string [],
-    LastTimeRequest? : Date,
+    LastTimeRequest? : number,
     USERLIST : UserList [],
     AddUserState : string,
     AddUserErrors : []
@@ -29,7 +29,8 @@ export const initialState: UserListState = {
     AddUserState : "wait",
     AddUserErrors : [],
     ChangeUserRoleState : "wait",
-    ChangeUserRoleError : []
+    ChangeUserRoleError : [],
+    LastTimeRequest : 0
 }
 
 
@@ -97,7 +98,7 @@ export const userSlice = createSlice({
           })
           .addCase(GetAllUser.fulfilled, (state,action) => {
             state.isLoading = false;
-            //state.LastTimeRequest = new Date();
+            state.LastTimeRequest = Date.now();
             state.USERLIST = action.payload
           })
           .addCase(GetAllUser.rejected, (state, action) => {

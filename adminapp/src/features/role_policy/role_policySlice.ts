@@ -5,7 +5,7 @@ import { fetchAlllLowerRoleOfUser, fetchEditRole , EditRoleSchmema } from './rol
 export interface RoleListState {
     isLoading: boolean
     GetROLELISTerror?: string [],
-    LastTimeRequest? : Date,
+    LastTimeRequestRole? : number,
     ROLELIST : Role [],
     AddRoleState : string,
     AddRoleErrors : [],
@@ -27,7 +27,8 @@ export const initialState: RoleListState = {
     AddRoleState : "wait",
     AddRoleErrors : [],
     EditRoleState : "wait",
-    EditRoleErrors :  []
+    EditRoleErrors :  [],
+    LastTimeRequestRole : 0
 }
 
 
@@ -78,7 +79,7 @@ export const roleSlice = createSlice({
           })
           .addCase(GetAllLowerRoleOfUser.fulfilled, (state,action) => {
             state.isLoading = false;
-            //state.LastTimeRequest = new Date();
+            state.LastTimeRequestRole = Date.now();
             state.ROLELIST = action.payload
           })
           .addCase(GetAllLowerRoleOfUser.rejected, (state, action) => {

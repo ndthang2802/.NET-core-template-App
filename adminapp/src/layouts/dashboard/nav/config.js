@@ -22,6 +22,11 @@ const navConfig = [
     icon: icon('ic_policy'),
   },
   {
+    title: 'category',
+    path: '/dashboard/category',
+    icon: icon('ic_category'),
+  },
+  {
     title: 'product',
     path: '/dashboard/products',
     icon: icon('ic_cart'),

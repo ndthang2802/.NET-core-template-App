@@ -105,23 +105,23 @@ export default function UserPage() {
 
 
   const dispatch = useAppDispatch();
-  const { USERLIST } = useSelector(userSelector);
-  const { ROLELIST } = useSelector(roleSelector);
+  const { USERLIST, LastTimeRequest } = useSelector(userSelector);
+  const { ROLELIST, LastTimeRequestRole } = useSelector(roleSelector);
 
 
   useEffect(()=> {
-    if (!USERLIST.length){
+    if (!USERLIST.length && Date.now() -  LastTimeRequest  > 300){
       dispatch(GetAllUser());
     }
     
-  },[USERLIST, USERLIST.length])
+  },[USERLIST, USERLIST.length, LastTimeRequest])
 
   useEffect(()=> {
-    if(!ROLELIST.length)
+    if(!ROLELIST.length && Date.now() - LastTimeRequestRole > 300)
     {
       dispatch(GetAllLowerRoleOfUser());
     }
-  },[ROLELIST, ROLELIST.length])
+  },[ROLELIST, ROLELIST.length, LastTimeRequestRole])
 
   const handleOpenMenu = (event, row) => {
     setEditUserRoleRowChoose(row);
@@ -263,7 +263,7 @@ export default function UserPage() {
                         </TableCell>
                       </TableRow>
                        <TableRow hover>
-                          <TableCell colSpan={5}><b>Roles:</b>&nbsp;&nbsp;{roles === "" ?  <Chip color="warning"  label={"Unassigned"} />  : roles.split(",").map((role,idx) => <Chip  sx={{ mr : 1}} key = {idx} color="info" label={role} />)}</TableCell>
+                          <TableCell colSpan={5}><b>Roles:</b>&nbsp;&nbsp;{roles === "" ?  <Chip color="warning"  label={"Unassigned"} />  : roles?.split(",").map((role,idx) => <Chip  sx={{ mr : 1}} key = {idx} color="info" label={role} />)}</TableCell>
                         </TableRow>
                         </Fragment>
                     );

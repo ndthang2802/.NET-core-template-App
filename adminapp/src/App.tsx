@@ -1,16 +1,4 @@
-// import React from 'react';
-// import logo from './logo.svg';
-// import { Counter } from './features/counter/Counter';
-// import './App.css';
-// import { Auth } from './features/auth/Auth';
 
-// function App() {
-//   return (
-//       <Auth />
-//   );
-// }
-
-// export default App;
 import { BrowserRouter } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 // routes
@@ -29,15 +17,14 @@ import { useAppDispatch } from './app/hooks';
 
 export default function App() {
   const dispatch = useAppDispatch();
-  // const navigate = useNavigate();
-  const { readyToGetInfomation, isAuth } = useSelector(authSelector);
+  const { readyToGetInfomation, } = useSelector(authSelector);
   useEffect(()=>{
     dispatch(fetchRefreshToken())
-  }, [])
+  }, [dispatch])
   useEffect(()=>{
     if (readyToGetInfomation)
       dispatch(GetUserInformation({}))
-  },[readyToGetInfomation])
+  },[readyToGetInfomation, dispatch])
   
   return (
     <HelmetProvider>

@@ -1,5 +1,5 @@
 import { useForm, Controller } from "react-hook-form";
-import { FormLabel, Checkbox, Box, Button, FormControl,InputLabel,Input, FormHelperText } from "@mui/material";
+import { FormLabel, Box, Button, FormControl,InputLabel,Input, FormHelperText } from "@mui/material";
 import Modal from '@mui/material/Modal';
 import BackspaceIcon from '@mui/icons-material/Backspace';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
@@ -29,7 +29,7 @@ const footerStyle = {
 
 export default function AddUserForm(props) {
   const { openAddUserForm,setOpenAddUserForm } = props;
-  const { handleSubmit, formState: { errors } ,control, reset } = useForm({
+  const { handleSubmit, formState: { errors }, watch ,control, reset } = useForm({
     defaultValues: {
       username: "",
       phoneNumber : "",
@@ -41,7 +41,10 @@ export default function AddUserForm(props) {
 
   const dispatch = useAppDispatch();
   const { AddUserState }  = useSelector(userSelector);
-  const handleClose = () => setOpenAddUserForm(false);
+  const handleClose = () => {
+        setOpenAddUserForm(false);
+        dispatch(setFinishAddUser())
+    }
   
   const onSubmit = data => {
     if (data){
@@ -50,19 +53,18 @@ export default function AddUserForm(props) {
   };
 
   useEffect(() => {
-    if (AddUserState == 'pending')
+    if (AddUserState === 'pending')
     {
         setOpenMessage({...openMessage, open : true, severity : "info", message : "Pending request"})
     }
-    else if (AddUserState == "success")
+    else if (AddUserState === "success")
     {
         setOpenMessage({...openMessage, open : true, severity : "success", message : "Add user success!"})
     }
-    else if (AddUserState == "fail")
+    else if (AddUserState === "fail")
     {
         setOpenMessage({...openMessage, open : true, severity : "error", message : "An error occured, add user fail!"})
     }
-    dispatch(setFinishAddUser())
   }, [AddUserState])
 
 
@@ -74,9 +76,14 @@ export default function AddUserForm(props) {
     severity : "info"
   });
 
+  useEffect(()=>{
+    dispatch(setFinishAddUser())
+  }, [watch])
+
 
   const handleCloseMessage = () => {
     setOpenMessage({ ...openMessage, open: false });
+    dispatch(setFinishAddUser())
   };
 
 
@@ -98,7 +105,7 @@ export default function AddUserForm(props) {
                     rules={{ required: true , pattern : {value : /^[A-Za-z0-9_-]{5,15}$/ , message: "Invalid username"} }}
                     render={({ field }) => <Input {...field} error={errors.username}   />}
                 />
-                <FormHelperText error={errors.username != undefined} >{errors?.username?.message}</FormHelperText>
+                <FormHelperText error={errors.username !== undefined} >{errors?.username?.message}</FormHelperText>
             </FormControl>
         <FormControl sx={{ my : 3 , px : 3, width : '36ch' }}  required >
             <InputLabel>Phone: </InputLabel>
@@ -108,7 +115,7 @@ export default function AddUserForm(props) {
                     rules={{ required: true, pattern : {value : /(84|0[3|5|7|8|9])+([0-9]{8})\b/ , message: "Invalid phone number" }}}
                     render={({ field }) => <Input {...field} error={errors.phoneNumber}  />}
                 />
-            <FormHelperText error={errors.phoneNumber != undefined} >{errors?.phoneNumber?.message}</FormHelperText>
+            <FormHelperText error={errors.phoneNumber !== undefined} >{errors?.phoneNumber?.message}</FormHelperText>
         </FormControl>
         <FormControl sx={{ my : 3, px : 2, width : '36ch' }} required >
             <InputLabel>Email: </InputLabel>
@@ -118,7 +125,7 @@ export default function AddUserForm(props) {
                     rules={{ required: true, pattern : { value : /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/ , message : "Invalid email address" } }}
                     render={({ field }) => <Input {...field} error={errors.email}  />}
                 />
-            <FormHelperText error={errors.email != undefined } >{errors?.email?.message}</FormHelperText>
+            <FormHelperText error={errors.email !== undefined } >{errors?.email?.message}</FormHelperText>
         </FormControl >
         <FormControl sx={{ my : 3, px : 3 }} fullWidth required margin='dense' >
             <InputLabel>Address: </InputLabel>

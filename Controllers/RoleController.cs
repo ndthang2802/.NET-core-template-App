@@ -26,7 +26,7 @@ public class RoleController : ApiControllerBase
     {
         return await Mediator.Send(command);
     }
-
+    [AuthorizeAttribute( roles: new string[] {"Administrator"}, policies: new Policy[] {Policy.UPDATEROLE})]
     [HttpPost("update")]
     public async Task<ActionResult<Result>> UpdateRole([FromBody] UpdateRoleCommand command)
     {

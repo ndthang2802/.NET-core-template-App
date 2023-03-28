@@ -101,13 +101,13 @@ export default function UserPage() {
 
   const dispatch = useAppDispatch();
 
-  const { ROLELIST } = useSelector(roleSelector);
+  const { ROLELIST , LastTimeRequestRole } = useSelector(roleSelector);
   useEffect(()=> {
-    if(!ROLELIST.length)
+    if(!ROLELIST.length && Date.now() - LastTimeRequestRole > 300)
     {
       dispatch(GetAllLowerRoleOfUser());
     }
-  },[ROLELIST, ROLELIST.length])
+  },[ROLELIST, ROLELIST.length, LastTimeRequestRole])
 
   const handleOpenMenu = (event, row) => {
     setEditRowChoose(row);

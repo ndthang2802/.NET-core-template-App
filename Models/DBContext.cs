@@ -30,6 +30,8 @@ public class DataContext : DbContext
     public DbSet<TodoItem> TodoItems => Set<TodoItem>();
     public DbSet<Product> Products => Set<Product>();
     public DbSet<Order> Orders => Set<Order>();
+    public DbSet<Category> Categories => Set<Category>();
+
 
 
 
@@ -45,6 +47,9 @@ public class DataContext : DbContext
         builder.Entity<Product>().Property(f => f.Id).ValueGeneratedOnAdd();
         builder.Entity<Order>().Property(f => f.Id).ValueGeneratedOnAdd();
         builder.Entity<Order>().HasIndex(u => u.Code).IsUnique();
+        builder.Entity<Category>().Property(f => f.Id).ValueGeneratedOnAdd();
+        builder.Entity<Category>().HasIndex(u => u.Code).IsUnique();
+
 
     }
 
