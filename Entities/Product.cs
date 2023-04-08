@@ -20,7 +20,8 @@ public class Product : BaseAuditableEntity
     public bool Display {get;set;}
     public int PurchasedCount {get;set;}
     public int NumberSoldCount {get;set;}
-
-    //public string Category {get;set;}
+    public float discount {get;set;} = 0;
+    public string? Category {get;set;}
+    public string? ImagesName {get;set;} 
 
 }

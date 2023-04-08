@@ -13,9 +13,6 @@ using StartFromScratch.Entities;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
-
-
-
 // Add services to the container.
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IPolicyService, PolicyService>();
@@ -27,10 +24,9 @@ builder.Services.AddDbContext<DataContext>(options =>
                 ));
 builder.Services.AddCors();
 builder.Services.AddControllers(options =>options.Filters.Add<ApiExceptionFilterAttribute>()).AddJsonOptions(x =>
-    {
-        // serialize enums as strings in api responses (e.g. Role)
-        x.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-    });
+{   // serialize enums as strings in api responses (e.g. Role)
+    x.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
 builder.Services.AddScoped<IJwtUtil, JwtUtil>();
 builder.Services.AddScoped(typeof(IBaseService<>), typeof(BaseService<>));
 builder.Services.AddScoped<IUserService, UserService>();
