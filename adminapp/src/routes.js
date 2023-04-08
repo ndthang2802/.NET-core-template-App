@@ -10,6 +10,8 @@ import UserPage from './pages/UserPage';
 import LoginPage from './pages/LoginPage';
 import Page404 from './pages/Page404';
 import ProductsPage from './pages/ProductsPage';
+import ProductManagementPage from './pages/ProductManagementPage';
+
 import DashboardAppPage from './pages/DashboardAppPage';
 import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
@@ -50,6 +52,7 @@ export default function Router() {
         { path: 'user', element: <UserPage /> },
         { path: 'role', element: <RolePage /> },
         { path: 'category', element: <CategoryPage /> },
+        { path: 'manage_products', element: <ProductManagementPage /> },
         { path: 'products', element: <ProductsPage /> },
         { path: 'blog', element: <BlogPage /> },
       ],

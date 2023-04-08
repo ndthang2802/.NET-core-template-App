@@ -1,7 +1,7 @@
 import SimpleBar from 'simplebar-react';
 // @mui
 import { alpha, styled } from '@mui/material/styles';
-
+import "simplebar-react/dist/simplebar.min.css";
 // ----------------------------------------------------------------------
 
 export const StyledRootScrollbar = styled('div')(() => ({

@@ -1,25 +1,10 @@
 import { Helmet } from 'react-helmet-async';
 import { useEffect, useState } from 'react';
-// @mui
-import {
-  Card,
-  Stack,
-  Button,
-  MenuItem,
-  Container,
-  Typography,
-  IconButton,
-  Divider,
-  Tooltip,
-  FormLabel,
-  Input
-} from '@mui/material';
-// components
+import {Card,Stack,Button,MenuItem,Container,Typography,IconButton,Divider,Tooltip,FormLabel,Input} from '@mui/material';
 import LabelIcon from '@mui/icons-material/Label';
 import Iconify from '../components/iconify';
 import Scrollbar from '../components/scrollbar';
 import DeleteIcon from '@mui/icons-material/Delete';
-
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
@@ -42,7 +27,6 @@ import BackspaceIcon from '@mui/icons-material/Backspace';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import FormHelperText from '@mui/material/FormHelperText';
 import MessageLog from "../sections/@dashboard/message";
-
 const treeViewBgColor = ['#e6f4ea', '#f3e8fd' , '#fcefe3' , '#e8f0fe']
 const treeViewColor = ['#3c8039', '#a250f5' , '#e3742f' , '#1a73e8']
 const style = {
@@ -145,9 +129,6 @@ StyledTreeItem.propTypes = {
   labelInfo: PropTypes.element,
   labelText: PropTypes.string.isRequired,
 };
-
-
-
 function DisplayCateTreeView(props ){
   const {cateList, setEditCateChoose} = props
   if( cateList == null) {
@@ -205,7 +186,6 @@ function convertToFlatList(cateList) {
     }
   }
   return res;
-  
 }
 export default function CategoryPage() {
   const [openAddCategoryForm,setOpenAddCategoryForm] = useState(false);

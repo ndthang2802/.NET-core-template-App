@@ -4,6 +4,8 @@ import counterReducer from '../features/counter/counterSlice';
 import userReducer from '../features/user/useSlice';
 import roleReducer from '../features/role_policy/role_policySlice';
 import categoryReducer from '../features/Category/CategorySlice';
+import productReducer from '../features/product/productSlice';
+
 
 
 
@@ -14,7 +16,8 @@ export const store = configureStore({
     auth : authReducer,
     user : userReducer,
     role : roleReducer,
-    category : categoryReducer
+    category : categoryReducer,
+    product : productReducer
   },
 });
 

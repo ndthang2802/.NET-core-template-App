@@ -1,7 +1,7 @@
 import { Helmet } from 'react-helmet-async';
 import { filter } from 'lodash';
 import { sentenceCase } from 'change-case';
-import { useEffect,Fragment, useState } from 'react';
+import { useEffect, useState } from 'react';
 // @mui
 import {
   Card,
@@ -31,7 +31,11 @@ import ContactMailIcon from '@mui/icons-material/ContactMail';
 import MoreTimeIcon from '@mui/icons-material/MoreTime';
 import BadgeIcon from '@mui/icons-material/Badge';
 // sections
-import { UserListHead, UserListToolbar, AddUserForm, ChangeUserRoleForm } from '../sections/@dashboard/user';
+import { UserListToolbar, AddUserForm, ChangeUserRoleForm } from '../sections/@dashboard/user';
+import { AddProductForm } from '../sections/@dashboard/productManagement';
+
+import { RoleTableHead } from '../sections/@dashboard/role_policy';
+
 
 import PhoneIcon from '@mui/icons-material/Phone';
 import BusinessIcon from '@mui/icons-material/Business';
@@ -41,14 +45,102 @@ import { GetAllLowerRoleOfUser, roleSelector } from '../features/role_policy/rol
 import { useAppDispatch } from '../app/hooks';
 import { useSelector } from 'react-redux';
 import CachedIcon from '@mui/icons-material/Cached';
+
+import { faker } from '@faker-js/faker';
+import { sample } from 'lodash';
+
+import QrCode2Icon from '@mui/icons-material/QrCode2';
+import DisplaySettingsIcon from '@mui/icons-material/DisplaySettings';
+import LabelIcon from '@mui/icons-material/Label';
+import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+import WarehouseIcon from '@mui/icons-material/Warehouse';
+import CategoryIcon from '@mui/icons-material/Category';
 // ----------------------------------------------------------------------
+function randomDate(date1, date2){
+    function randomValueBetween(min, max) {
+      return Math.random() * (max - min) + min;
+    }
+    var date1 = date1 || '01-01-1970'
+    var date2 = date2 || new Date().toLocaleDateString()
+    date1 = new Date(date1).getTime()
+    date2 = new Date(date2).getTime()
+    if( date1>date2){
+        return new Date(randomValueBetween(date2,date1)).toLocaleDateString()   
+    } else{
+        return new Date(randomValueBetween(date1, date2)).toLocaleDateString()  
+
+    }
+}
+const PRODUCT_NAME = [
+    'Nike Air Force 1 NDESTRUKT',
+    'Nike Space Hippie 04',
+    'Nike Air Zoom Pegasus 37 A.I.R. Chaz Bear',
+    'Nike Blazer Low 77 Vintage',
+    'Nike ZoomX SuperRep Surge',
+    'Zoom Freak 2',
+    'Nike Air Max Zephyr',
+    'Jordan Delta',
+    'Air Jordan XXXV PF',
+    'Nike Waffle Racer Crater',
+    'Kyrie 7 EP Sisterhood',
+    'Nike Air Zoom BB NXT',
+    'Nike Air Force 1 07 LX',
+    'Nike Air Force 1 Shadow SE',
+    'Nike Air Zoom Tempo NEXT%',
+    'Nike DBreak-Type',
+    'Nike Air Max Up',
+    'Nike Air Max 270 React ENG',
+    'NikeCourt Royale',
+    'Nike Air Zoom Pegasus 37 Premium',
+    'Nike Air Zoom SuperRep',
+    'NikeCourt Royale',
+    'Nike React Art3mis',
+    'Nike React Infinity Run Flyknit A.I.R. Chaz Bear',
+  ];
+  const PRODUCT_COLOR = ['#00AB55', '#000000', '#FFFFFF', '#FFC0CB', '#FF4842', '#1890FF', '#94D82D', '#FFC107'];
+  const CATEGORIES = ["STANDARDSHOES", "NIKESHOES", "AUTHSHOES"]
+  const PRODUCTLIST = [...Array(24)].map((_, index) => {
+    const setIndex = index + 1;
+  
+    return {
+      id : setIndex,
+      code: "AAAAAAAAAAAAAAA",
+      imgLink: `/assets/images/products/product_${setIndex}.jpg`,
+      name: PRODUCT_NAME[index],
+      description :  PRODUCT_NAME[index] + 'is very popular',
+      sellPrice: faker.datatype.number({ min: 4, max: 99, precision: 0.01 }),
+      inStock :  faker.datatype.number({ min: 5, max: 50 }), 
+        //   priceSale: setIndex % 3 ? null : faker.datatype.number({ min: 19, max: 29, precision: 0.01 }),
+    //   colors:
+    //     (setIndex === 1 && PRODUCT_COLOR.slice(0, 2)) ||
+    //     (setIndex === 2 && PRODUCT_COLOR.slice(1, 3)) ||
+    //     (setIndex === 3 && PRODUCT_COLOR.slice(2, 4)) ||
+    //     (setIndex === 4 && PRODUCT_COLOR.slice(3, 6)) ||
+    //     (setIndex === 23 && PRODUCT_COLOR.slice(4, 6)) ||
+    //     (setIndex === 24 && PRODUCT_COLOR.slice(5, 6)) ||
+    //     PRODUCT_COLOR,
+      display : true,
+      purchasedCount : faker.datatype.number({ min: 5, max: 50 }),
+      numberSoldCount : faker.datatype.number({ min: 50, max: 100 }),
+      discount : faker.datatype.number({ min: 0, max: 1, precision: 0.01 }),
+      category : CATEGORIES[setIndex % 3],
+      created : randomDate('01/01/2023', '03/29/2023'),
+      status: sample(['sale', 'new', '', '']),
+    };
+  });
+
+
 
 const TABLE_HEAD = [
-  { id: 'username', label: 'Username', alignRight: false, icon : <BadgeIcon /> },
-  { id: 'phoneNumber', label: 'Phone', alignRight: false , icon : <PhoneIcon />},
-  { id: 'address', label: 'Address', alignRight: false , icon : <BusinessIcon />},
-  { id: 'email', label: 'E-mail', alignRight: false, icon : <ContactMailIcon /> },
-  { id: 'created', label: 'Date created', alignRight: false, icon : <MoreTimeIcon /> },
+  { id: 'name', label: 'Name', align: 'center' , icon : <LabelIcon />},
+  { id: 'code', label: 'Code', align: 'center', icon : <QrCode2Icon /> },
+  { id: 'description', label: 'Description', width : '15%'  ,align: 'center' , icon : <LibraryBooksIcon />},
+  { id: 'sellPrice', label: 'Price', align: 'center', icon : <AttachMoneyIcon /> },
+  { id: 'inStock', label: 'Stock' ,  align: 'center', icon : <WarehouseIcon /> },
+  { id: 'display', label: 'Appear',  align: 'center', icon : <DisplaySettingsIcon /> },
+  { id: 'category', label: 'Category', align: 'center', icon : <CategoryIcon /> },
+  { id: 'created', label: 'Date created', align: 'center', width : '10%',icon : <MoreTimeIcon /> },
   { id: '' },
 ];
 
@@ -78,12 +170,12 @@ function applySortFilter(array, comparator, query) {
     return a[1] - b[1];
   });
   if (query) {
-    return filter(array, (_user) => _user.username.toLowerCase().indexOf(query.toLowerCase()) !== -1);
+    return filter(array, (_user) => _user.name.toLowerCase().indexOf(query.toLowerCase()) !== -1);
   }
   return stabilizedThis.map((el) => el[0]);
 }
 
-export default function UserPage() {
+export default function ProductManagementPage() {
   const [open, setOpen] = useState(null);
 
   const [page, setPage] = useState(0);
@@ -96,11 +188,11 @@ export default function UserPage() {
 
   const [filterName, setFilterName] = useState('');
 
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(15);
   const [editUserRoleRowChoose,setEditUserRoleRowChoose] = useState({});
 
 
-  const [openAddUserForm,setOpenAddUserForm] = useState(false);
+  const [openAddProductForm,setOpenAddProductForm] = useState(false);
   const [openChangeUserRoleForm,setOpenChangeUserRoleForm] = useState(false);
 
 
@@ -140,7 +232,7 @@ export default function UserPage() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = USERLIST.map((n) => n.name);
+      const newSelecteds = PRODUCTLIST.map((n) => n.code);
       setSelected(newSelecteds);
       return;
     }
@@ -176,14 +268,14 @@ export default function UserPage() {
     setFilterName(event.target.value);
   };
 
-  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERLIST.length) : 0;
+  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - PRODUCTLIST.length) : 0;
 
-  const filteredUsers = applySortFilter(USERLIST, getComparator(order, orderBy), filterName);
+  const filteredUsers = applySortFilter(PRODUCTLIST, getComparator(order, orderBy), filterName);
 
   const isNotFound = !filteredUsers.length && !!filterName;
 
-  const onAddUserButtonClick = () => {
-    setOpenAddUserForm(true);
+  const onAddProductButtonClick = () => {
+    setOpenAddProductForm(true);
   }
   const onChangeUserRoleButtonClick = () => {
     setOpenChangeUserRoleForm(true);
@@ -193,66 +285,76 @@ export default function UserPage() {
 
   return (
     <>
-      <AddUserForm openAddUserForm={openAddUserForm} setOpenAddUserForm={setOpenAddUserForm} />
+      <AddProductForm openAddProductForm={openAddProductForm} setOpenAddProductForm={setOpenAddProductForm} />
       <ChangeUserRoleForm openChangeUserRoleForm={openChangeUserRoleForm} setOpenChangeUserRoleForm={setOpenChangeUserRoleForm} values = {{...editUserRoleRowChoose, roles : editUserRoleRowChoose?.roles ? editUserRoleRowChoose?.roles.split(",") : [] }} />
       <Helmet>
-        <title> User | Minimal UI </title>
+        <title> Product Management | Minimal UI </title>
       </Helmet>
 
       <Container maxWidth = 'xl'>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" style={{display: 'flex',alignItems: 'center',flexWrap: 'wrap'}} gutterBottom>
-            User&nbsp;&nbsp;<CachedIcon fontSize='large' onClick={()=>dispatch(GetAllUser())} style={{ cursor : 'pointer'}} />
+            Products Management&nbsp;&nbsp;<CachedIcon fontSize='large' onClick={()=>dispatch(GetAllUser())} style={{ cursor : 'pointer'}} />
           </Typography>
-          <Button variant="contained" onClick={onAddUserButtonClick} startIcon={<Iconify icon="eva:plus-fill" />}>
-            New User
+          <Button variant="contained" onClick={onAddProductButtonClick} startIcon={<Iconify icon="eva:plus-fill" />}>
+            New product
           </Button>
         </Stack>
 
         <Card>
-          <UserListToolbar numSelected={selected.length} filterName={filterName} onFilterName={handleFilterByName} />
+          <UserListToolbar numSelected={selected.length} filterName={filterName} placeholderStr='Search product...' onFilterName={handleFilterByName} />
 
           <Scrollbar>
             <TableContainer sx={{ minWidth: 800 }}>
-              <Table>
-                <UserListHead
+              <Table >
+                <RoleTableHead
                   order={order}
                   orderBy={orderBy}
                   headLabel={TABLE_HEAD}
-                  rowCount={USERLIST.length}
+                  rowCount={PRODUCTLIST.length}
                   numSelected={selected.length}
                   onRequestSort={handleRequestSort}
                   onSelectAllClick={handleSelectAllClick}
                 />
                 <TableBody>
                   {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => {
-                    const { id, username, phoneNumber, address, email,roles, avatarUrl,created, isVerified } = row;
-                    const selectedUser = selected.indexOf(username) !== -1;
+                    const { id, code, name, description, sellPrice,inStock,display, imgLink,created, category } = row;
+                    const selectedUser = selected.indexOf(code) !== -1;
 
                     return (
-                      <Fragment key={id} >
-                      <TableRow hover  tabIndex={-1} role="checkbox" selected={selectedUser}>
-                        <TableCell rowSpan={2} padding="checkbox">
-                          <Checkbox checked={selectedUser} onChange={(event) => handleClick(event, username)} />
+                      <TableRow key={index} hover  tabIndex={-1} role="checkbox" selected={selectedUser}>
+                        <TableCell  padding="checkbox">
+                          <Checkbox checked={selectedUser} onChange={(event) => handleClick(event, code)} />
                         </TableCell>
 
-                        <TableCell rowSpan={2} component="th" scope="row" padding="normal">
-                          <Stack direction="row" alignItems="center" spacing={2}>
-                            <Avatar alt={username} src={`/assets/images/avatars/avatar_${index + 1}.jpg`} />
+                        <TableCell  component="th" scope="row" padding="normal">
+                          <Stack direction="column" alignItems="center" spacing={2}>
+                            <Avatar alt={name} src={imgLink} variant="rounded" />
                             <Typography variant="subtitle2" noWrap>
-                              {username}
+                              {name}
                             </Typography>
                           </Stack>
                         </TableCell>
 
-                        <TableCell align="left">{phoneNumber}</TableCell>
+                        <TableCell align="left">{code}</TableCell>
 
-                        <TableCell align="left">{address}</TableCell>
+                        <TableCell align="left">{description}</TableCell>
 
 
+                        <TableCell align="right">
+                          {/* <Label color={('success' === 'banned' && 'error') || 'success'}>{sentenceCase('success')}</Label> */}
+                          {sellPrice}
+                        </TableCell>
+                        <TableCell align="right">
+                          {/* <Label color={('success' === 'banned' && 'error') || 'success'}>{sentenceCase('success')}</Label> */}
+                          {inStock}
+                        </TableCell>
+                        <TableCell align="left">
+                          <Label color={display ? 'success' : 'error'}>{sentenceCase(display ? 'appear' : 'hide')}</Label>
+                        </TableCell>
                         <TableCell align="left">
                           {/* <Label color={('success' === 'banned' && 'error') || 'success'}>{sentenceCase('success')}</Label> */}
-                          {email}
+                          {category}
                         </TableCell>
                         <TableCell align="left">{(new Date(created)).toLocaleString()}</TableCell>
 
@@ -262,10 +364,6 @@ export default function UserPage() {
                           </IconButton>
                         </TableCell>
                       </TableRow>
-                       <TableRow hover>
-                          <TableCell colSpan={5}><b>Roles:</b>&nbsp;&nbsp;{roles === "" ?  <Chip color="warning"  label={"Unassigned"} />  : roles?.split(",").map((role,idx) => <Chip  sx={{ mr : 1}} key = {idx} color="info" label={role} />)}</TableCell>
-                        </TableRow>
-                        </Fragment>
                     );
                   })}
                   {emptyRows > 0 && (
@@ -303,9 +401,9 @@ export default function UserPage() {
           </Scrollbar>
 
           <TablePagination
-            rowsPerPageOptions={[5, 10, 25]}
+            rowsPerPageOptions={[5, 15, 25]}
             component="div"
-            count={USERLIST.length}
+            count={PRODUCTLIST.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}

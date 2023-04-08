@@ -54,6 +54,7 @@ export default function RoleTableHead({
             key={headCell.id}
             align={headCell.align}
             sortDirection={orderBy === headCell.id ? order : false}
+            style={{   width : headCell.width ? headCell.width : 'auto' }}
           >
             <TableSortLabel
               hideSortIcon

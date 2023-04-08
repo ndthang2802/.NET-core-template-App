@@ -36,6 +36,18 @@ const MenuProps = {
     },
   },
 };
+function convertToFlatList(cateList) {
+  var res = [];
+  for (var i = 0; i < cateList.length ; i ++)
+  {
+    res.push(cateList[i])
+    if (cateList[i].subCategoriesList != null){
+      var x = convertToFlatList(cateList[i].subCategoriesList)
+      res = res.concat(x)
+    }
+  }
+  return res;
+}
 export default function AddCategoryForm(props) {
   const { openAddCategoryForm,setOpenAddCategoryForm } = props;
   const { handleSubmit, formState: { errors }, setValue , watch ,control, reset } = useForm({
@@ -148,7 +160,7 @@ export default function AddCategoryForm(props) {
                               MenuProps={MenuProps}
                             >
                               {
-                                [{id : 0, displayName : "No parent"}].concat(CATEGORIESLIST).map((category, idx) => (
+                                [{id : 0, displayName : "No parent"}].concat(convertToFlatList(CATEGORIESLIST)).map((category, idx) => (
                                   <MenuItem
                                     key={idx}
                                     value={category.id}

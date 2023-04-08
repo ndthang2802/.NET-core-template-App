@@ -44,8 +44,8 @@ const TABLE_HEAD = [
   { id: 'code', label: 'Code', align: "left", icon : <VpnKeyIcon /> },
   { id: 'description', label: 'Description', align: "left" , icon : <DescriptionIcon />},
   { id: 'level', label: 'Level', align: "center" , icon : <FormatListNumberedIcon />},
-  { id: 'policies', label: 'Policies', align: "center", icon : <PolicyIcon /> },
-  { id: 'created', label: 'Date created', align: "left", icon : <MoreTimeIcon /> },
+  { id: 'policies', label: 'Policies', align: "center",  width : '65%' , icon : <PolicyIcon /> },
+  { id: 'created', label: 'Date created' ,align: "left", icon : <MoreTimeIcon /> },
   { id: '' },
 ];
 
@@ -179,7 +179,7 @@ export default function UserPage() {
         <title> Role & Policies | Minimal UI </title>
       </Helmet>
 
-      <Container>
+      <Container maxWidth='xl'>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" style={{display: 'flex',alignItems: 'center',flexWrap: 'wrap'}} gutterBottom>
             Role & Policies&nbsp;&nbsp;<CachedIcon fontSize='large' onClick={()=>dispatch(GetAllLowerRoleOfUser())} style={{ cursor : 'pointer'}} />
