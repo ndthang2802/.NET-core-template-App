@@ -1,16 +1,18 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { AppThunk, RootState } from '@app/store';
-import { AddProductSchmema, fetchAddProduct } from './productAPI'
+import { _GetImageProductLink, AddProductSchmema, DeleteProductSchema, fetchAddProduct, fetchDeleteProduct, fetchQueryProductList, QueryProduct } from './productAPI'
 
 export interface ProductListState {
     isLoading: boolean
     GetPRODUCTLISTerror?: string [],
-    LastTimeRequest? : number,
+    LastTimeRequestProduct? : number,
     PRODUCTLIST : ProductList [],
     AddProductState : string,
     AddProductErrors : []
     ChangeProductState : string
     ChangeProductError : [],
+    DeleteProductState : string,
+    DeleteProductError? : string []
 }
 export interface ProductList {
     // username : string,
@@ -19,9 +21,10 @@ export interface ProductList {
     // email: string,
     // roles: string,
     // policies: [],
-    // created: string,
+    created: string,
     id: number,
-    images : any [],
+    code : string,
+    imagesName : any [],
     name : string,
     description : string,
     sellPrice : number,
@@ -37,24 +40,25 @@ export const initialState: ProductListState = {
     AddProductErrors : [],
     ChangeProductState : "wait",
     ChangeProductError : [],
-    LastTimeRequest : 0
+    LastTimeRequestProduct : 0,
+    DeleteProductState : 'wait',
 }
 
 
-//   export const GetAllUser = createAsyncThunk< ProductList [] , any , { rejectValue: string [] }>(
-//     'user/all',
-//     async ( data ,thunkApi) => {
-//       const response = await fetchAllUserList();
-//       if (response.responses && response.responses.data)
-//       {
-//         return   (response.responses.data) as UserList []
-//       }
-//       else {
-//         return thunkApi.rejectWithValue((response.errors) as string[]);
-//       }
+  export const GetProductList = createAsyncThunk< ProductList [] , QueryProduct , { rejectValue: string [] }>(
+    'product/query',
+    async ( data ,thunkApi) => {
+      const response = await fetchQueryProductList(data);
+      if (response.responses && response.responses.data)
+      {
+        return   (response.responses.data.items) as ProductList []
+      }
+      else {
+        return thunkApi.rejectWithValue((response.errors) as string[]);
+      }
       
-//     }
-//   );
+    }
+  );
 
   export const AddProduct = createAsyncThunk< boolean , AddProductSchmema , { rejectValue: string [] }>(
     'product/add',
@@ -71,20 +75,24 @@ export const initialState: ProductListState = {
     }
   );
 
-//   export const ChangeUserRole = createAsyncThunk< boolean , ChangeUserRoleSchema , { rejectValue: string [] }>(
-//     'user/update-roles',
-//     async ( data ,thunkApi) => {
-//       const response = await fetchChangeUserRole(data);
-//       if (response.responses && response.succeeded)
-//       {
-//         return  true;
-//       }
-//       else {
-//         return thunkApi.rejectWithValue((response.errors) as string[]);
-//       }
+  export const GetImageProductLink = (link : string) => {
+    return _GetImageProductLink(link);
+  }
+
+  export const DeleteProduct = createAsyncThunk< boolean , DeleteProductSchema , { rejectValue: string [] }>(
+    'product/delete',
+    async ( data ,thunkApi) => {
+      const response = await fetchDeleteProduct(data);
+      if (response.responses && response.succeeded)
+      {
+        return  true;
+      }
+      else {
+        return thunkApi.rejectWithValue((response.errors) as string[]);
+      }
       
-//     }
-//   );
+    }
+  );
 
 
 export const productSlice = createSlice({
@@ -93,22 +101,25 @@ export const productSlice = createSlice({
     reducers: {
       setFinishAddProduct: (state) => {
         state.AddProductState = "wait"
+      },
+      setFinishDeleteProduct: (state) => {
+        state.DeleteProductState = "wait"
       }
     },
     extraReducers: (builder) => {
         builder
-        //   .addCase(GetAllUser.pending, (state) => {
-        //     state.isLoading = true;
-        //   })
-        //   .addCase(GetAllUser.fulfilled, (state,action) => {
-        //     state.isLoading = false;
-        //     state.LastTimeRequest = Date.now();
-        //     state.USERLIST = action.payload
-        //   })
-        //   .addCase(GetAllUser.rejected, (state, action) => {
-        //     state.isLoading = false;
-        //     state.GetUSERLISTerror = action.payload
-        //   }) // add user
+          .addCase(GetProductList.pending, (state) => {
+            state.isLoading = true;
+          })
+          .addCase(GetProductList.fulfilled, (state,action) => {
+            state.isLoading = false;
+            state.LastTimeRequestProduct = Date.now();
+            state.PRODUCTLIST = action.payload
+          })
+          .addCase(GetProductList.rejected, (state, action) => {
+            state.isLoading = false;
+            state.GetPRODUCTLISTerror = action.payload
+          }) // add product
           .addCase(AddProduct.pending, (state) => {
             state.AddProductState = "pending";
           })
@@ -117,11 +128,21 @@ export const productSlice = createSlice({
           })
           .addCase(AddProduct.rejected, (state) => {
             state.AddProductState = "fail"
+          }) // Delete product
+          .addCase(DeleteProduct.pending, (state) => {
+            state.DeleteProductState = "pending";
+          })
+          .addCase(DeleteProduct.fulfilled, (state,action) => {
+            state.DeleteProductState = action ? "success" : "fail"
+          })
+          .addCase(DeleteProduct.rejected, (state, action) => {
+            state.DeleteProductState = "fail";
+            state.DeleteProductError = action.payload;
           })
           ;
           
       },
 })
-export const { setFinishAddProduct  } = productSlice.actions
+export const { setFinishAddProduct, setFinishDeleteProduct  } = productSlice.actions
 export const productSelector = (state: RootState) => state.product
 export default productSlice.reducer

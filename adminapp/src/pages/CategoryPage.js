@@ -308,7 +308,7 @@ export default function CategoryPage() {
                         <Controller
                             name="code"
                             control={control}
-                            rules={{ required: true , pattern : {value : /^[A-Za-z0-9_-]{5,30}$/ , message: "Invalid code"} }}
+                            rules={{ required: true , pattern : {value : /^[A-Za-z0-9_-]{3,30}$/ , message: "Invalid code"} }}
                             render={({ field }) => <Input  {...field} size='small' error={errors.code !== undefined || EditCategoryError?.Code !== undefined}   />}
                         />
                         <FormHelperText error={errors.code !== undefined || EditCategoryError?.Code !== undefined} >{errors?.code?.message || (EditCategoryError?.Code && EditCategoryError?.Code[0])  }</FormHelperText>

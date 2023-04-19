@@ -1,5 +1,11 @@
 import { useForm, Controller } from "react-hook-form";
-import { FormLabel, TextField, Box, Button, FormControl,InputLabel,Input, FormHelperText, MenuItem , Chip, OutlinedInput, Select, Stack, Divider, List, ListItem, ListItemAvatar, Avatar, ListItemText, IconButton } from "@mui/material";
+import { TableContainer,
+  Table,
+  Paper,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,FormLabel, TextField, Box, Button, FormControl,InputLabel,Input, FormHelperText, MenuItem , Chip, OutlinedInput, Select, Stack, Divider, List, ListItem, ListItemAvatar, Avatar, ListItemText, IconButton } from "@mui/material";
 import { useTheme } from '@mui/material/styles';
 import Modal from '@mui/material/Modal';
 import AddBusinessIcon from '@mui/icons-material/AddBusiness';
@@ -7,7 +13,7 @@ import BackspaceIcon from '@mui/icons-material/Backspace';
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
 import {  categorySelector , GetAllCategories   } from "features/Category/CategorySlice";
 import DeleteIcon from '@mui/icons-material/Delete';
-
+import { MuiColorInput } from 'mui-color-input';
 import { useAppDispatch } from "app/hooks";
 import { useSelector } from "react-redux";
 import { useEffect, useState, useMemo, Fragment } from "react";
@@ -15,15 +21,19 @@ import MessageLog from "../message";
 import Switch from "@mui/material/Switch";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import { AddProduct, productSelector, setFinishAddProduct } from "features/product/productSlice";
+import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
+import { BorderedSection } from "../../../components/containers";
 const style = {
     position: 'absolute',
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: 700,
-    backgroundColor: '#f5f5f5',
+    width: 1200,
+    backgroundColor: '#fff',
     boxShadow: 24,
     p: 4,
+    height : '95vh',
+    overflowY : 'scroll'
   };
 const footerStyle = {
     my : 3,
@@ -56,18 +66,25 @@ function convertToFlatList(cateList) {
     }
     return res;
   }
+const defaultDetailValue = {
+  image : null,
+  color : "#e28743",
+  sizes : "s,m,l,xl,xxl",
+  inStock : 10
+}
 export default function AddProductForm(props) {
   const theme = useTheme();
   const { openAddProductForm,setOpenAddProductForm } = props;
   const { handleSubmit, formState: { errors }, setValue , watch ,control, reset } = useForm({
     defaultValues: {
-        images : [],
+        //images : [],
         name : "",
         description : "",
         sellPrice : 0,
-        inStock : 0,
+        //inStock : 0,
         display : true,
-        category : []
+        category : [],
+        details : [],
     }
   });
   useEffect(() => {
@@ -89,7 +106,15 @@ export default function AddProductForm(props) {
   }
   const onSubmit = data => {
     if (data){
-        let data_ = {...data, category : data.category.join(",")}
+        //let data_ = {...data, category : data.category.join(",")}
+        let data_ = {
+          name : data.name,
+          description : data.description,
+          category : data.category.join(","),
+          sellPrice : data.sellPrice,
+          display : data.display,
+          information : data.details
+        }
         dispatch(AddProduct(data_));
     }
   };
@@ -141,23 +166,69 @@ export default function AddProductForm(props) {
     };
   }
 
-  const handleCapture = async ({ target }) => {
-        let files = Array.from(target.files).map((file, idx) => {
-            let reader = new FileReader();
-            return new Promise(resolve => {
-                reader.onload = () => resolve({ id : idx, data:reader.result, name:file.name, size: file.size, type: file.type});
-                reader.readAsDataURL(file);
-            });
-        });
-        setValue('images',  await Promise.all(files), true)
-    };
+  // const handleCapture = async ({ target }) => {
+  //       let files = Array.from(target.files).map((file, idx) => {
+  //           let reader = new FileReader();
+  //           return new Promise(resolve => {
+  //               reader.onload = () => resolve({ id : idx, data:reader.result, name:file.name, size: file.size, type: file.type});
+  //               reader.readAsDataURL(file);
+  //           });
+  //       });
+  //       setValue('images',  await Promise.all(files), true)
+  //   };
+  // const handleDeleteImages = async ({id}) => {
+  //   setValue('images',
+  //     [...watch('images')].filter(x => x.id != id)
+  //     , true)
+  // }
+  // const [color, setColor] = useState('#ffffff');
+  // const handleColorChange = (color) => {
+  //   setColor(color)
+  // }
+  const handleCaptureImageDetail = async ({ target }, index) => {
+      let files = Array.from(target.files).map((file, idx) => {
+          let reader = new FileReader();
+          return new Promise(resolve => {
+              reader.onload = () => resolve({ id : idx, data:reader.result, name:file.name, size: file.size, type: file.type});
+              reader.readAsDataURL(file);
+          });
+      });
+      // setValue('images',  await Promise.all(files), true)
+      setValue("details",
+        [
+          ...watch("details").slice(0,index),
+            {
+              ...watch("details")[index],
+              image :  await Promise.all(files)
+            },
+          ...watch("details").slice(index+1)
 
-  const handleDeleteImages = async ({id}) => {
-    console.log(id);
-    setValue('images',
-      [...watch('images')].filter(x => x.id != id)
-      , true)
+        ]
+        ,true)
+  };
+  const handleEditDetail = (index, prop , value) => {
+      setValue("details",
+      [
+        ...watch("details").slice(0,index),
+          {
+            ...watch("details")[index],
+            [prop] : value
+          },
+        ...watch("details").slice(index+1)
+
+      ]
+      ,true)
   }
+
+  const handleDeleteDetails =(idx) => {
+    setValue("details",
+      [
+        ...watch("details").filter((s,i) => i != idx)
+      ]
+      ,true)
+  }
+
+
   return (
     <>
     <MessageLog openMessage={openMessage} handleCloseMessage={handleCloseMessage} />
@@ -168,17 +239,17 @@ export default function AddProductForm(props) {
         <Box p={3} component='form' onSubmit={handleSubmit(onSubmit)} style={style}>
         <FormLabel > <b> ADD PRODUCT </b> </FormLabel>
         <FormControl fullWidth />
-        <FormControl sx={{ my : 3 , px : 3, width : '46ch'}} required >
+        <FormControl sx={{ my : 3 , px : 3, width : '90ch'}} required >
                 <InputLabel>Name: </InputLabel>
                 <Controller
                     name="name"
                     control={control}
-                    rules={{ required: true , pattern : {value : /^[A-Za-z0-9_-]{5,30}$/ , message: "Invalid name"} }}
+                    rules={{ required: true , pattern : {value : /^[A-Za-z0-9_-]{3,30}$/ , message: "Invalid name"} }}
                     render={({ field }) => <Input {...field} error={errors.name !== undefined}   />}
                 />
                 <FormHelperText error={errors.name !== undefined || AddProductErrors?.Name !== undefined} >{errors?.name?.message || (AddProductErrors?.Name && AddProductErrors?.Name[0])  }</FormHelperText>
             </FormControl>
-        <FormControl sx={{ my : 3, px : 2, width : '26ch' }}  required  >
+        <FormControl sx={{ my : 3, px : 2, width : '35ch' }}  required  >
             <InputLabel>Sell Price: </InputLabel>
             <Controller
                     name="sellPrice"
@@ -188,34 +259,67 @@ export default function AddProductForm(props) {
                 />
               <FormHelperText error={errors.sellPrice !== undefined || AddProductErrors?.sellPrice !== undefined} >{errors?.sellPrice?.message || (AddProductErrors?.sellPrice && AddProductErrors?.sellPrice[0]) }</FormHelperText>
         </FormControl >
-        <FormControl sx={{ my : 3, px : 2, width : '36ch' }}  required  >
-            <InputLabel>In stock: </InputLabel>
-            <Controller
-                    name="inStock"
-                    control={control}
-                    rules={{ required: true , validate : (v) => v > 0 , message: "Invalid sell price" }}
-                    render={({ field }) => <Input type="number" {...field} error={errors.inStock !== undefined}   />}
-                />
-              <FormHelperText error={errors.inStock !== undefined || AddProductErrors?.inStock !== undefined} >{errors?.inStock?.message || (AddProductErrors?.inStock && AddProductErrors?.inStock[0]) }</FormHelperText>
-        </FormControl >
-        <FormControlLabel sx={{ my : 3, px : 2, width : '36ch', verticalAlign : 'bottom' , justifyContent : 'center' }} 
-                label="Appear to user"  
-                control={<Controller
-                    control={control}
-                    name="display"
-                    render={({ value: valueProp }) => {
-                    return (
-                        <Switch
-                        value={valueProp}
-                        onChange={(event, val) => setValue(`display`, val) }
-                        />
-                    );
-                    }}
-                />}  >
-            {/* <InputLabel>In stock: </InputLabel> */}
-            <FormHelperText error={errors.display !== undefined || AddProductErrors?.display !== undefined} >{errors?.display?.message || (AddProductErrors?.display && AddProductErrors?.display[0]) }</FormHelperText>
-        </FormControlLabel >
-        <FormControl sx={{ m : 2, pr : 5 }} fullWidth required margin='dense' >
+          <Controller
+                      name="details_"
+                      control={control}
+                      rules={{ required: true }}
+                      render={({ field }) => 
+                      <TableContainer component={Paper} >
+                      <Table sx={{ minWidth: 600 }} aria-label="simple table">
+                        <TableHead>
+                          <TableRow>
+                            <TableCell>
+                              Image
+                              <IconButton color="primary" aria-label="upload picture" component="label" onClick={() => setValue("details",[...watch("details"), defaultDetailValue],true)} >
+                                <PlaylistAddIcon />
+                              </IconButton>
+                            </TableCell>
+                            <TableCell align="right">Color</TableCell>
+                            <TableCell align="right">Size&nbsp;(seperated by ",")</TableCell>
+                            <TableCell align="right">In stock&nbsp;</TableCell>
+                            <TableCell align="right">Delete&nbsp;</TableCell>
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {
+                            typeof(watch("details")) == 'object' &&
+                            watch("details").map((row,idx) => (
+                              <TableRow
+                                key={idx}
+                                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                              >
+                                <TableCell component="th" scope="row">
+                                  {
+                                    row.image ? <Avatar variant="square" sx={{ height: '120px', width: '120px' }} alt={row.image[0]?.name} src={row.image[0]?.data} /> : 
+                                    <Button {...field}  variant="outlined" component='label' startIcon={<PhotoCamera />} >
+                                      Upload
+                                      <input hidden accept="image/*" type="file" onChange={(e) => handleCaptureImageDetail(e,idx)} />
+                                    </Button>
+                                  }
+                                </TableCell>
+                                <TableCell align="right">
+                                  {
+                                    <MuiColorInput  format="hex"  value={row.color} onChange={(color) => handleEditDetail(idx,"color", color)} />
+                                  }
+                                </TableCell>
+                                <TableCell align="right">{
+                                  <Input  value={row.sizes} onChange={(e)=> handleEditDetail(idx,'sizes',e.target.value)} />
+                                }</TableCell>
+                                <TableCell align="right">{<Input value={row.inStock} type="number" onChange={(e)=> handleEditDetail(idx,'inStock',e.target.value)} />}</TableCell>
+                                <TableCell component="th" scope="row">
+                                  <IconButton aria-label="delete" onClick={()=> handleDeleteDetails(idx)}>
+                                    <DeleteIcon />
+                                  </IconButton>
+                                </TableCell>
+                              </TableRow>
+                            ))
+                          }
+                        </TableBody>
+                      </Table>
+                    </TableContainer>
+                    }
+                    />
+        {/* <FormControl sx={{ m : 2, pr : 5 }} fullWidth required margin='dense' >
             <Controller
                     name="images"
                     control={control}
@@ -256,7 +360,7 @@ export default function AddProductForm(props) {
                     }
                 />
               <FormHelperText error={errors.images !== undefined || AddProductErrors?.images !== undefined} >{errors?.images?.message || (AddProductErrors?.images && AddProductErrors?.images[0]) }</FormHelperText>
-        </FormControl >
+        </FormControl > */}
         <FormControl sx={{ m : 2, pr : 5 }} fullWidth required margin='dense' >
             <Controller
                     name="description"

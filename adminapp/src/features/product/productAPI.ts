@@ -7,21 +7,25 @@ export interface AddProductSchmema {
     display : boolean,
     category : string []
 }
+export interface QueryProduct {
+    pageNumber: number,
+    pageSize: number
+}
 
-// export interface ChangeUserRoleSchema {
-//     userId : number,
-//     roles : string
-// }
+export interface DeleteProductSchema {
+    ProductId: number,
+}
 
-// export async function fetchAllUserList() {
-//     return await ( await fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/user/all`, {
-//         method : 'GET',
-//         credentials: 'include',
-//         headers : {
-//             "Content-Type" : 'application/json'
-//         }
-//     })).json()
-//   }
+export async function fetchQueryProductList(data : QueryProduct) {
+    return await ( await fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/product/query`, {
+        method : 'POST',
+        credentials: 'include',
+        headers : {
+            "Content-Type" : 'application/json'
+        },
+        body : JSON.stringify(data)
+    })).json()
+  }
 
 export async function fetchAddProduct(data : AddProductSchmema) {
     return await ( await fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/Product/add`, {
@@ -34,16 +38,20 @@ export async function fetchAddProduct(data : AddProductSchmema) {
     })).json()
   }
 
-//   export async function fetchChangeUserRole(data : ChangeUserRoleSchema) {
-//     return await ( await fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/user/update-roles`, {
-//         method : 'POST',
-//         credentials: 'include',
-//         headers : {
-//             "Content-Type" : 'application/json',
-//         },
-//         body : JSON.stringify(data)
-//     })).json()
-//   }
+export  function _GetImageProductLink(link : string) {
+  return `${process.env.REACT_APP_API_ENDPOINT}/api/Product/img?name=${link}`
+}
+
+export async function fetchDeleteProduct(data : DeleteProductSchema) {
+    return await ( await fetch(`${process.env.REACT_APP_API_ENDPOINT}/api/Product/delete`, {
+        method : 'POST',
+        credentials: 'include',
+        headers : {
+            "Content-Type" : 'application/json',
+        },
+        body : JSON.stringify(data)
+    })).json()
+  }
 
 
   

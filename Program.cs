@@ -20,7 +20,7 @@ builder.Services.AddSingleton<ICurrentUserService, CurrentUserService>();
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
 builder.Services.AddScoped<AuditableEntitySaveChangesInterceptor>();
 builder.Services.AddDbContext<DataContext>(options =>
-                    options.UseSqlite(builder.Configuration.GetConnectionString("AppData")
+                    options.UseSqlServer(builder.Configuration.GetConnectionString("AppData")
                 ));
 builder.Services.AddCors();
 builder.Services.AddControllers(options =>options.Filters.Add<ApiExceptionFilterAttribute>()).AddJsonOptions(x =>
@@ -133,7 +133,6 @@ app.UseAuthorization();
 app.UseAuthentication();
 
 app.MapControllers();
-
 
 
 

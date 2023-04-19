@@ -18,11 +18,15 @@ public class DeleteProductCommandHandler : IRequestHandler<DeleteProductCommand,
 {
     private readonly IMapper _mapper ;
     private readonly IProductService _ProductService;
+    private IWebHostEnvironment  _environment;
+    private string productImageSavePath = "";
 
-    public DeleteProductCommandHandler(IProductService ProductService, IMapper mapper)
+    public DeleteProductCommandHandler(IProductService ProductService,IWebHostEnvironment  Environment, IMapper mapper)
     {
         _mapper = mapper;
         _ProductService = ProductService;
+        _environment = Environment;
+        productImageSavePath = _environment.WebRootPath + "/images/products/";
     }
 
     public async Task<Result> Handle(DeleteProductCommand request, CancellationToken cancellationToken)
@@ -32,7 +36,7 @@ public class DeleteProductCommandHandler : IRequestHandler<DeleteProductCommand,
         {
             return Result.ItemNotFound();
         } 
-        bool succeeded = await  _ProductService.DeleteAndSave(entity);
+        bool succeeded = await  _ProductService.DeleteProduct(productImageSavePath,entity);
         if (succeeded)
         {
             BaseReponse reponse = new BaseReponse {
@@ -42,7 +46,7 @@ public class DeleteProductCommandHandler : IRequestHandler<DeleteProductCommand,
             return Result.Success(reponse);
         }
         else {
-            return Result.Failure(HttpStatusCode.BadRequest, new string [] {"Product Fails"});
+            return Result.Failure(HttpStatusCode.BadRequest, new string [] {"Delete product Fails"});
         }
     }
 }

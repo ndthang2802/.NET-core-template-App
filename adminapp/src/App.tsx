@@ -12,6 +12,7 @@ import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { GetUserInformation, fetchRefreshToken, authSelector } from 'features/auth/authSlice';
 import { useAppDispatch } from './app/hooks';
+import "./App.css"
 
 // ----------------------------------------------------------------------
 

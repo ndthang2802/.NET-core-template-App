@@ -1,180 +1,36 @@
 import { Helmet } from 'react-helmet-async';
-import { filter } from 'lodash';
 import { sentenceCase } from 'change-case';
-import { useEffect, useState } from 'react';
-// @mui
-import {
-  Card,
-  Table,
-  Stack,
-  Paper,
-  Avatar,
-  Button,
-  Popover,
-  Checkbox,
-  TableRow,
-  MenuItem,
-  TableBody,
-  TableCell,
-  Container,
-  Typography,
-  IconButton,
-  TableContainer,
-  TablePagination,
-  Chip,
-} from '@mui/material';
-// components
+import { Fragment, useEffect, useState } from 'react';
+import {Card,Table,Stack,Paper,Button,Popover,Checkbox,TableRow,MenuItem,TableBody,TableCell,Container,Typography,IconButton,TableContainer,TablePagination,Chip,ImageList,ImageListItem, ImageListItemBar, Avatar,} from '@mui/material';
 import Label from '../components/label';
 import Iconify from '../components/iconify';
 import Scrollbar from '../components/scrollbar';
-import ContactMailIcon from '@mui/icons-material/ContactMail';
 import MoreTimeIcon from '@mui/icons-material/MoreTime';
-import BadgeIcon from '@mui/icons-material/Badge';
-// sections
-import { UserListToolbar, AddUserForm, ChangeUserRoleForm } from '../sections/@dashboard/user';
+import { UserListToolbar } from '../sections/@dashboard/user';
 import { AddProductForm } from '../sections/@dashboard/productManagement';
-
 import { RoleTableHead } from '../sections/@dashboard/role_policy';
-
-
-import PhoneIcon from '@mui/icons-material/Phone';
-import BusinessIcon from '@mui/icons-material/Business';
-import { userSelector, GetAllUser } from '../features/user/useSlice';
-import { GetAllLowerRoleOfUser, roleSelector } from '../features/role_policy/role_policySlice';
-
 import { useAppDispatch } from '../app/hooks';
 import { useSelector } from 'react-redux';
-import CachedIcon from '@mui/icons-material/Cached';
-
-import { faker } from '@faker-js/faker';
-import { sample } from 'lodash';
-
 import QrCode2Icon from '@mui/icons-material/QrCode2';
 import DisplaySettingsIcon from '@mui/icons-material/DisplaySettings';
 import LabelIcon from '@mui/icons-material/Label';
 import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import WarehouseIcon from '@mui/icons-material/Warehouse';
-import CategoryIcon from '@mui/icons-material/Category';
+import { DeleteProduct, GetImageProductLink, GetProductList, productSelector, setFinishDeleteProduct } from 'features/product/productSlice';
+import MessageLog from 'sections/@dashboard/message';
+import { applySortFilter, getComparator } from './common';
 // ----------------------------------------------------------------------
-function randomDate(date1, date2){
-    function randomValueBetween(min, max) {
-      return Math.random() * (max - min) + min;
-    }
-    var date1 = date1 || '01-01-1970'
-    var date2 = date2 || new Date().toLocaleDateString()
-    date1 = new Date(date1).getTime()
-    date2 = new Date(date2).getTime()
-    if( date1>date2){
-        return new Date(randomValueBetween(date2,date1)).toLocaleDateString()   
-    } else{
-        return new Date(randomValueBetween(date1, date2)).toLocaleDateString()  
-
-    }
-}
-const PRODUCT_NAME = [
-    'Nike Air Force 1 NDESTRUKT',
-    'Nike Space Hippie 04',
-    'Nike Air Zoom Pegasus 37 A.I.R. Chaz Bear',
-    'Nike Blazer Low 77 Vintage',
-    'Nike ZoomX SuperRep Surge',
-    'Zoom Freak 2',
-    'Nike Air Max Zephyr',
-    'Jordan Delta',
-    'Air Jordan XXXV PF',
-    'Nike Waffle Racer Crater',
-    'Kyrie 7 EP Sisterhood',
-    'Nike Air Zoom BB NXT',
-    'Nike Air Force 1 07 LX',
-    'Nike Air Force 1 Shadow SE',
-    'Nike Air Zoom Tempo NEXT%',
-    'Nike DBreak-Type',
-    'Nike Air Max Up',
-    'Nike Air Max 270 React ENG',
-    'NikeCourt Royale',
-    'Nike Air Zoom Pegasus 37 Premium',
-    'Nike Air Zoom SuperRep',
-    'NikeCourt Royale',
-    'Nike React Art3mis',
-    'Nike React Infinity Run Flyknit A.I.R. Chaz Bear',
-  ];
-  const PRODUCT_COLOR = ['#00AB55', '#000000', '#FFFFFF', '#FFC0CB', '#FF4842', '#1890FF', '#94D82D', '#FFC107'];
-  const CATEGORIES = ["STANDARDSHOES", "NIKESHOES", "AUTHSHOES"]
-  const PRODUCTLIST = [...Array(24)].map((_, index) => {
-    const setIndex = index + 1;
-  
-    return {
-      id : setIndex,
-      code: "AAAAAAAAAAAAAAA",
-      imgLink: `/assets/images/products/product_${setIndex}.jpg`,
-      name: PRODUCT_NAME[index],
-      description :  PRODUCT_NAME[index] + 'is very popular',
-      sellPrice: faker.datatype.number({ min: 4, max: 99, precision: 0.01 }),
-      inStock :  faker.datatype.number({ min: 5, max: 50 }), 
-        //   priceSale: setIndex % 3 ? null : faker.datatype.number({ min: 19, max: 29, precision: 0.01 }),
-    //   colors:
-    //     (setIndex === 1 && PRODUCT_COLOR.slice(0, 2)) ||
-    //     (setIndex === 2 && PRODUCT_COLOR.slice(1, 3)) ||
-    //     (setIndex === 3 && PRODUCT_COLOR.slice(2, 4)) ||
-    //     (setIndex === 4 && PRODUCT_COLOR.slice(3, 6)) ||
-    //     (setIndex === 23 && PRODUCT_COLOR.slice(4, 6)) ||
-    //     (setIndex === 24 && PRODUCT_COLOR.slice(5, 6)) ||
-    //     PRODUCT_COLOR,
-      display : true,
-      purchasedCount : faker.datatype.number({ min: 5, max: 50 }),
-      numberSoldCount : faker.datatype.number({ min: 50, max: 100 }),
-      discount : faker.datatype.number({ min: 0, max: 1, precision: 0.01 }),
-      category : CATEGORIES[setIndex % 3],
-      created : randomDate('01/01/2023', '03/29/2023'),
-      status: sample(['sale', 'new', '', '']),
-    };
-  });
-
-
-
 const TABLE_HEAD = [
   { id: 'name', label: 'Name', align: 'center' , icon : <LabelIcon />},
   { id: 'code', label: 'Code', align: 'center', icon : <QrCode2Icon /> },
   { id: 'description', label: 'Description', width : '15%'  ,align: 'center' , icon : <LibraryBooksIcon />},
   { id: 'sellPrice', label: 'Price', align: 'center', icon : <AttachMoneyIcon /> },
-  { id: 'inStock', label: 'Stock' ,  align: 'center', icon : <WarehouseIcon /> },
-  { id: 'display', label: 'Appear',  align: 'center', icon : <DisplaySettingsIcon /> },
-  { id: 'category', label: 'Category', align: 'center', icon : <CategoryIcon /> },
+  //{ id: 'inStock', label: 'Stock' ,  align: 'center', icon : <WarehouseIcon /> },
+  //{ id: 'display', label: 'Appear',  align: 'center', icon : <DisplaySettingsIcon /> },
   { id: 'created', label: 'Date created', align: 'center', width : '10%',icon : <MoreTimeIcon /> },
   { id: '' },
 ];
-
-// ----------------------------------------------------------------------
-
-function descendingComparator(a, b, orderBy) {
-  if (b[orderBy] < a[orderBy]) {
-    return -1;
-  }
-  if (b[orderBy] > a[orderBy]) {
-    return 1;
-  }
-  return 0;
-}
-
-function getComparator(order, orderBy) {
-  return order === 'desc'
-    ? (a, b) => descendingComparator(a, b, orderBy)
-    : (a, b) => -descendingComparator(a, b, orderBy);
-}
-
-function applySortFilter(array, comparator, query) {
-  const stabilizedThis = array.map((el, index) => [el, index]);
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) return order;
-    return a[1] - b[1];
-  });
-  if (query) {
-    return filter(array, (_user) => _user.name.toLowerCase().indexOf(query.toLowerCase()) !== -1);
-  }
-  return stabilizedThis.map((el) => el[0]);
-}
-
 export default function ProductManagementPage() {
   const [open, setOpen] = useState(null);
 
@@ -189,34 +45,58 @@ export default function ProductManagementPage() {
   const [filterName, setFilterName] = useState('');
 
   const [rowsPerPage, setRowsPerPage] = useState(15);
-  const [editUserRoleRowChoose,setEditUserRoleRowChoose] = useState({});
 
+  const [selectProductRow,setSelectProductRow] = useState({});
+
+  const [anchorEl, setAnchorEl] = useState(null);
 
   const [openAddProductForm,setOpenAddProductForm] = useState(false);
-  const [openChangeUserRoleForm,setOpenChangeUserRoleForm] = useState(false);
-
 
   const dispatch = useAppDispatch();
-  const { USERLIST, LastTimeRequest } = useSelector(userSelector);
-  const { ROLELIST, LastTimeRequestRole } = useSelector(roleSelector);
+  
+  const { PRODUCTLIST, LastTimeRequestProduct, DeleteProductState } = useSelector(productSelector);
+  
+  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - PRODUCTLIST.length) : 0;
 
+  const filteredProducts = applySortFilter(PRODUCTLIST, getComparator(order, orderBy), filterName, 'name');
 
+  const isNotFound = !filteredProducts.length && !!filterName;
+
+  const popoveropen = Boolean(anchorEl);
+
+  const popoverid = open ? 'simple-popover' : undefined;
+
+  const [openMessage, setOpenMessage] = useState({
+    open: false,
+    message : "",
+    vertical: 'top',
+    horizontal: 'center',
+    severity : "info"
+  });
+  
   useEffect(()=> {
-    if (!USERLIST.length && Date.now() -  LastTimeRequest  > 300){
-      dispatch(GetAllUser());
+    if (!PRODUCTLIST.length && Date.now() -  LastTimeRequestProduct  > 300){
+      dispatch(GetProductList({ pageNumber : page, pageSize : rowsPerPage }));
     }
-    
-  },[USERLIST, USERLIST.length, LastTimeRequest])
+  },[PRODUCTLIST, LastTimeRequestProduct, dispatch])
 
-  useEffect(()=> {
-    if(!ROLELIST.length && Date.now() - LastTimeRequestRole > 300)
+  useEffect(() => {
+    if (DeleteProductState === 'pending')
     {
-      dispatch(GetAllLowerRoleOfUser());
+        setOpenMessage({...openMessage, open : true, severity : "info", message : "Pending request"})
     }
-  },[ROLELIST, ROLELIST.length, LastTimeRequestRole])
+    else if (DeleteProductState === "success")
+    {
+        setOpenMessage({...openMessage, open : true, severity : "success", message : "Add product success!"})
+    }
+    else if (DeleteProductState === "fail")
+    {
+        setOpenMessage({...openMessage, open : true, severity : "error", message : "An error occured, add product fail!"})
+    }
+  }, [DeleteProductState, setOpenMessage, openMessage ])
 
   const handleOpenMenu = (event, row) => {
-    setEditUserRoleRowChoose(row);
+    setSelectProductRow(row);
     setOpen(event.currentTarget);
   };
 
@@ -268,42 +148,45 @@ export default function ProductManagementPage() {
     setFilterName(event.target.value);
   };
 
-  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - PRODUCTLIST.length) : 0;
-
-  const filteredUsers = applySortFilter(PRODUCTLIST, getComparator(order, orderBy), filterName);
-
-  const isNotFound = !filteredUsers.length && !!filterName;
 
   const onAddProductButtonClick = () => {
     setOpenAddProductForm(true);
   }
-  const onChangeUserRoleButtonClick = () => {
-    setOpenChangeUserRoleForm(true);
-    handleCloseMenu()
-  }
+
+  const handleClickDelete = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleCloseDelete = () => {
+    setAnchorEl(null);
+  };
+  
+  const handleCloseMessage = () => {
+    setOpenMessage({ ...openMessage, open: false });
+    dispatch(setFinishDeleteProduct())
+  };
+
+  
+
   
 
   return (
     <>
+      <MessageLog openMessage={openMessage} handleCloseMessage={handleCloseMessage} />
       <AddProductForm openAddProductForm={openAddProductForm} setOpenAddProductForm={setOpenAddProductForm} />
-      <ChangeUserRoleForm openChangeUserRoleForm={openChangeUserRoleForm} setOpenChangeUserRoleForm={setOpenChangeUserRoleForm} values = {{...editUserRoleRowChoose, roles : editUserRoleRowChoose?.roles ? editUserRoleRowChoose?.roles.split(",") : [] }} />
       <Helmet>
         <title> Product Management | Minimal UI </title>
       </Helmet>
-
       <Container maxWidth = 'xl'>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" style={{display: 'flex',alignItems: 'center',flexWrap: 'wrap'}} gutterBottom>
-            Products Management&nbsp;&nbsp;<CachedIcon fontSize='large' onClick={()=>dispatch(GetAllUser())} style={{ cursor : 'pointer'}} />
+            Products Management
           </Typography>
           <Button variant="contained" onClick={onAddProductButtonClick} startIcon={<Iconify icon="eva:plus-fill" />}>
             New product
           </Button>
         </Stack>
-
         <Card>
           <UserListToolbar numSelected={selected.length} filterName={filterName} placeholderStr='Search product...' onFilterName={handleFilterByName} />
-
           <Scrollbar>
             <TableContainer sx={{ minWidth: 800 }}>
               <Table >
@@ -317,19 +200,38 @@ export default function ProductManagementPage() {
                   onSelectAllClick={handleSelectAllClick}
                 />
                 <TableBody>
-                  {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => {
-                    const { id, code, name, description, sellPrice,inStock,display, imgLink,created, category } = row;
+                  {filteredProducts.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => {
+                    const { code, details ,name, description, sellPrice,inStock,display, imagesName,created, category } = row;
                     const selectedUser = selected.indexOf(code) !== -1;
-
                     return (
-                      <TableRow key={index} hover  tabIndex={-1} role="checkbox" selected={selectedUser}>
-                        <TableCell  padding="checkbox">
+                      <Fragment key={index}>
+                      <TableRow  hover  tabIndex={-1} role="checkbox" selected={selectedUser}>
+                        <TableCell rowSpan={2} padding="checkbox">
                           <Checkbox checked={selectedUser} onChange={(event) => handleClick(event, code)} />
                         </TableCell>
 
-                        <TableCell  component="th" scope="row" padding="normal">
+                        <TableCell rowSpan={2}  component="th" scope="row" padding="normal">
                           <Stack direction="column" alignItems="center" spacing={2}>
-                            <Avatar alt={name} src={imgLink} variant="rounded" />
+                            {/* {
+                                details?.map(detail => detail.imageName).join(",")
+                            } */}
+                            <ImageList sx={{ width: 220, height: 220, p : 2  }} className='test' cols={1} >
+                              { details?.map((item, idx) => (
+                                <ImageListItem key={idx}>
+                                  <img
+                                    src={`${GetImageProductLink(item.imageName)}`} //?w=164&h=164&fit=crop&auto=format`}
+                                    srcSet={`${GetImageProductLink(item.imageName)}`} //?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
+                                    alt={item}
+                                    loading="lazy"
+                                  />
+                                  <ImageListItemBar
+                                    title={<Avatar sx={{ bgcolor: item.color, width: 25 , height: 25, mb : 1 }}  variant="square">&nbsp;</Avatar>}
+                                    subtitle={item.sizes?.split(",").join(" ")}
+                                  />
+                                </ImageListItem>
+                              ))}
+                            </ImageList> 
+                            
                             <Typography variant="subtitle2" noWrap>
                               {name}
                             </Typography>
@@ -341,29 +243,32 @@ export default function ProductManagementPage() {
                         <TableCell align="left">{description}</TableCell>
 
 
-                        <TableCell align="right">
-                          {/* <Label color={('success' === 'banned' && 'error') || 'success'}>{sentenceCase('success')}</Label> */}
+                        <TableCell align="center">
                           {sellPrice}
                         </TableCell>
-                        <TableCell align="right">
-                          {/* <Label color={('success' === 'banned' && 'error') || 'success'}>{sentenceCase('success')}</Label> */}
+                        {/* <TableCell align="center">
                           {inStock}
-                        </TableCell>
-                        <TableCell align="left">
+                        </TableCell> */}
+                        {/* <TableCell align="center">
                           <Label color={display ? 'success' : 'error'}>{sentenceCase(display ? 'appear' : 'hide')}</Label>
-                        </TableCell>
-                        <TableCell align="left">
-                          {/* <Label color={('success' === 'banned' && 'error') || 'success'}>{sentenceCase('success')}</Label> */}
-                          {category}
-                        </TableCell>
+                        </TableCell> */}
                         <TableCell align="left">{(new Date(created)).toLocaleString()}</TableCell>
 
-                        <TableCell align="right">
+                        <TableCell rowSpan={2} align="right">
                           <IconButton size="large" color="inherit" onClick={(e) => handleOpenMenu(e, row)}>
                             <Iconify icon={'eva:more-vertical-fill'} />
                           </IconButton>
                         </TableCell>
                       </TableRow>
+                      <TableRow hover>
+                        <TableCell colSpan={6} align="left">
+                        <b>Categories:</b>&nbsp;&nbsp;
+                        {
+                          category?.split(",").map((cate,idx) => <Chip  sx={{ mr : 1}} key = {idx} color="info" label={cate} />)
+                        }
+                      </TableCell>
+                    </TableRow>
+                    </Fragment>
                     );
                   })}
                   {emptyRows > 0 && (
@@ -434,14 +339,26 @@ export default function ProductManagementPage() {
           <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
           Edit
         </MenuItem>
-        <MenuItem onClick={onChangeUserRoleButtonClick}>
+        <MenuItem >
           <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
-          Change role
+          Update
         </MenuItem>
-        <MenuItem sx={{ color: 'error.main' }}>
+        <MenuItem sx={{ color: 'error.main' }} onClick={handleClickDelete}>
           <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
           Delete
         </MenuItem>
+        <Popover
+          id={popoverid}
+          open={popoveropen}
+          anchorEl={anchorEl}
+          onClose={handleCloseDelete}
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'left',
+          }}
+        >
+          <Button onClick={() => dispatch(DeleteProduct({ ProductId : selectProductRow.id})) }>Confirm</Button>
+        </Popover>
       </Popover>
     </>
   );

@@ -1,6 +1,7 @@
 using MediatR;
 using AutoMapper;
 using StartFromScratch.Models;
+using Microsoft.EntityFrameworkCore;
 using StartFromScratch.Entities;
 using StartFromScratch.Services;
 namespace StartFromScratch.Usecases.Products.Queries;
@@ -13,12 +14,10 @@ public record GetProductsWithPaginationCommand : IRequest<Result>
 public class GetProductsWithPaginationCommandHandler : IRequestHandler<GetProductsWithPaginationCommand, Result>
 {
     private readonly DataContext _context;
-    private readonly IMapper _mapper ;
     private readonly IProductService _productService;
-    public GetProductsWithPaginationCommandHandler(DataContext context, IProductService productService, IMapper mapper)
+    public GetProductsWithPaginationCommandHandler(DataContext context, IProductService productService)
     {
         _context = context;
-        _mapper = mapper;
         _productService = productService;
     }
     public async Task<Result> Handle(GetProductsWithPaginationCommand request, CancellationToken cancellationToken)

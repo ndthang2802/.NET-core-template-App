@@ -1,6 +1,4 @@
 import { Helmet } from 'react-helmet-async';
-import { filter } from 'lodash';
-import { sentenceCase } from 'change-case';
 import { useEffect,Fragment, useState } from 'react';
 // @mui
 import {
@@ -24,7 +22,6 @@ import {
   Chip,
 } from '@mui/material';
 // components
-import Label from '../components/label';
 import Iconify from '../components/iconify';
 import Scrollbar from '../components/scrollbar';
 import ContactMailIcon from '@mui/icons-material/ContactMail';
@@ -32,17 +29,15 @@ import MoreTimeIcon from '@mui/icons-material/MoreTime';
 import BadgeIcon from '@mui/icons-material/Badge';
 // sections
 import { UserListHead, UserListToolbar, AddUserForm, ChangeUserRoleForm } from '../sections/@dashboard/user';
-
 import PhoneIcon from '@mui/icons-material/Phone';
 import BusinessIcon from '@mui/icons-material/Business';
 import { userSelector, GetAllUser } from '../features/user/useSlice';
 import { GetAllLowerRoleOfUser, roleSelector } from '../features/role_policy/role_policySlice';
-
 import { useAppDispatch } from '../app/hooks';
 import { useSelector } from 'react-redux';
 import CachedIcon from '@mui/icons-material/Cached';
-// ----------------------------------------------------------------------
-
+import { applySortFilter, getComparator } from './common';
+// ---------------------------------------------------------------------
 const TABLE_HEAD = [
   { id: 'username', label: 'Username', alignRight: false, icon : <BadgeIcon /> },
   { id: 'phoneNumber', label: 'Phone', alignRight: false , icon : <PhoneIcon />},
@@ -51,38 +46,6 @@ const TABLE_HEAD = [
   { id: 'created', label: 'Date created', alignRight: false, icon : <MoreTimeIcon /> },
   { id: '' },
 ];
-
-// ----------------------------------------------------------------------
-
-function descendingComparator(a, b, orderBy) {
-  if (b[orderBy] < a[orderBy]) {
-    return -1;
-  }
-  if (b[orderBy] > a[orderBy]) {
-    return 1;
-  }
-  return 0;
-}
-
-function getComparator(order, orderBy) {
-  return order === 'desc'
-    ? (a, b) => descendingComparator(a, b, orderBy)
-    : (a, b) => -descendingComparator(a, b, orderBy);
-}
-
-function applySortFilter(array, comparator, query) {
-  const stabilizedThis = array.map((el, index) => [el, index]);
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) return order;
-    return a[1] - b[1];
-  });
-  if (query) {
-    return filter(array, (_user) => _user.username.toLowerCase().indexOf(query.toLowerCase()) !== -1);
-  }
-  return stabilizedThis.map((el) => el[0]);
-}
-
 export default function UserPage() {
   const [open, setOpen] = useState(null);
 
@@ -97,31 +60,38 @@ export default function UserPage() {
   const [filterName, setFilterName] = useState('');
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
+
   const [editUserRoleRowChoose,setEditUserRoleRowChoose] = useState({});
 
-
   const [openAddUserForm,setOpenAddUserForm] = useState(false);
+
   const [openChangeUserRoleForm,setOpenChangeUserRoleForm] = useState(false);
 
-
   const dispatch = useAppDispatch();
+
   const { USERLIST, LastTimeRequest } = useSelector(userSelector);
+
   const { ROLELIST, LastTimeRequestRole } = useSelector(roleSelector);
 
+  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERLIST.length) : 0;
+
+  const filteredUsers = applySortFilter(USERLIST, getComparator(order, orderBy), filterName, 'username');
+
+  const isNotFound = !filteredUsers.length && !!filterName;
 
   useEffect(()=> {
     if (!USERLIST.length && Date.now() -  LastTimeRequest  > 300){
       dispatch(GetAllUser());
     }
     
-  },[USERLIST, USERLIST.length, LastTimeRequest])
+  },[USERLIST, USERLIST.length, LastTimeRequest, dispatch])
 
   useEffect(()=> {
     if(!ROLELIST.length && Date.now() - LastTimeRequestRole > 300)
     {
       dispatch(GetAllLowerRoleOfUser());
     }
-  },[ROLELIST, ROLELIST.length, LastTimeRequestRole])
+  },[ROLELIST, ROLELIST.length, LastTimeRequestRole, dispatch])
 
   const handleOpenMenu = (event, row) => {
     setEditUserRoleRowChoose(row);
@@ -176,12 +146,6 @@ export default function UserPage() {
     setFilterName(event.target.value);
   };
 
-  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERLIST.length) : 0;
-
-  const filteredUsers = applySortFilter(USERLIST, getComparator(order, orderBy), filterName);
-
-  const isNotFound = !filteredUsers.length && !!filterName;
-
   const onAddUserButtonClick = () => {
     setOpenAddUserForm(true);
   }
@@ -190,7 +154,6 @@ export default function UserPage() {
     handleCloseMenu()
   }
   
-
   return (
     <>
       <AddUserForm openAddUserForm={openAddUserForm} setOpenAddUserForm={setOpenAddUserForm} />
@@ -198,7 +161,6 @@ export default function UserPage() {
       <Helmet>
         <title> User | Minimal UI </title>
       </Helmet>
-
       <Container maxWidth = 'xl'>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" style={{display: 'flex',alignItems: 'center',flexWrap: 'wrap'}} gutterBottom>
@@ -208,10 +170,8 @@ export default function UserPage() {
             New User
           </Button>
         </Stack>
-
         <Card>
           <UserListToolbar numSelected={selected.length} filterName={filterName} onFilterName={handleFilterByName} />
-
           <Scrollbar>
             <TableContainer sx={{ minWidth: 800 }}>
               <Table>
@@ -226,16 +186,14 @@ export default function UserPage() {
                 />
                 <TableBody>
                   {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => {
-                    const { id, username, phoneNumber, address, email,roles, avatarUrl,created, isVerified } = row;
+                    const { id, username, phoneNumber, address, email,roles,created } = row;
                     const selectedUser = selected.indexOf(username) !== -1;
-
                     return (
                       <Fragment key={id} >
                       <TableRow hover  tabIndex={-1} role="checkbox" selected={selectedUser}>
                         <TableCell rowSpan={2} padding="checkbox">
                           <Checkbox checked={selectedUser} onChange={(event) => handleClick(event, username)} />
                         </TableCell>
-
                         <TableCell rowSpan={2} component="th" scope="row" padding="normal">
                           <Stack direction="row" alignItems="center" spacing={2}>
                             <Avatar alt={username} src={`/assets/images/avatars/avatar_${index + 1}.jpg`} />
@@ -244,18 +202,12 @@ export default function UserPage() {
                             </Typography>
                           </Stack>
                         </TableCell>
-
                         <TableCell align="left">{phoneNumber}</TableCell>
-
                         <TableCell align="left">{address}</TableCell>
-
-
                         <TableCell align="left">
-                          {/* <Label color={('success' === 'banned' && 'error') || 'success'}>{sentenceCase('success')}</Label> */}
                           {email}
                         </TableCell>
                         <TableCell align="left">{(new Date(created)).toLocaleString()}</TableCell>
-
                         <TableCell align="right">
                           <IconButton size="large" color="inherit" onClick={(e) => handleOpenMenu(e, row)}>
                             <Iconify icon={'eva:more-vertical-fill'} />

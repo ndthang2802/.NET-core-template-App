@@ -19,7 +19,7 @@ public record AddUserCommand : IRequest<Result>, IMapTo<User>
 
     public void Mapping(Profile profile)
     {
-        profile.CreateMap<AddUserCommand, User>().ForMember(d => d.PasswordHash, opt => opt.MapFrom(s => BCrypt.Net.BCrypt.HashPassword(s.Password)));
+        profile.CreateMap<AddUserCommand, User>().ForMember(d => d.PasswordHash, opt => opt.MapFrom(s => UserFunc.HashPassword(s.Password)));
     }
 }
 public class AddUserCommandValidator : AbstractValidator<AddUserCommand>

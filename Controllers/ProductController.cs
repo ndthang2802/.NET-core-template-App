@@ -35,16 +35,16 @@ public class ProductController : ApiControllerBase
         }
     }
     // [AuthorizeAttribute( roles: new string[] {}, policies: new Policy[] {Policy.GETALLCATEGORIES})]
-    // [HttpGet("getall")]
-    // public async Task<ActionResult<Result>> GetAll([FromQuery] GetAllCategoriesCommand command)
-    // {
-    //     return await Mediator.Send(command);
-    // }
-    // [HttpGet("get")]
-    // public async Task<ActionResult<Result>> GetLowerProduct([FromQuery] GetAllLowerProductsCommand command)
-    // {
-    //     return await Mediator.Send(command);
-    // }
+    [HttpPost("delete")]
+    public async Task<ActionResult<Result>> DeleteProduct([FromBody] DeleteProductCommand command)
+    {
+        return await Mediator.Send(command);
+    }
+    [HttpPost("query")]
+    public async Task<ActionResult<Result>> QueryProduct([FromBody] GetProductsWithPaginationCommand command)
+    {
+        return await Mediator.Send(command);
+    }
     // [AuthorizeAttribute( roles: new string[] {}, policies: new Policy[] {Policy.UPDATEProduct})]
     // [HttpPost("update")]
     // public async Task<ActionResult<Result>> UpdateProduct([FromBody] UpdateProductCommand command)

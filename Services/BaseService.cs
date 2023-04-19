@@ -6,7 +6,6 @@ public interface IBaseService<T> where T : class
 {
     public  Task<bool> AddAsync (T entity);
     public  Task<bool> AddRangeAsync (IList<T> entity);
-
     public  Task<bool> UpdateAndSave (T entity);
     public void Update(T entity);
     public Task<bool> SaveChangesAsync ();

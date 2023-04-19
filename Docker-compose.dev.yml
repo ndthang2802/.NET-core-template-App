@@ -1,0 +1,54 @@
+x-app: &default-app
+  env_file:
+    - ".env"
+  restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
+  stop_grace_period: "3s"
+  tty: true
+  healthcheck:
+    interval: "60s"
+    timeout: "3s"
+    start_period: "5s"
+    retries: 3
+services:
+  stroreapi:
+    <<: *default-app
+    build:
+      context: "./"
+      dockerfile: Dockerfile.dev
+      target: ${NODE_ENV}
+      args:
+        - "NODE_ENV=${NODE_ENV}"
+    ports:
+      - "${DOCKER_SERVER_PORT_FORWARD}:${SERVER_PORT}"
+    # healthcheck:
+    #   test: "${DOCKER_SERVER_HEALTHCHECK_TEST}"
+    volumes:
+      - "./:/net/app:delegated"
+      - "/net/app/node_modules"
+  sql:
+    image: "mcr.microsoft.com/mssql/server:2022-latest"
+    container_name: OnlineStoreDB
+    ports: # not actually needed, because the two services are on the same network
+      - "1433:1433" 
+    environment:
+      - ACCEPT_EULA=y
+      - SA_PASSWORD=thisisaverycomplexpassword
+  adminapp:
+    <<: *default-app
+    # depends_on:
+    # - "backend"
+    build:
+      context: "./adminapp"
+      target: ${NODE_ENV}
+      dockerfile: Dockerfile.dev
+      args:
+        - "NODE_ENV=${NODE_ENV}"
+    ports:
+      - "${DOCKER_CLIENT_PORT_FORWARD}:${CLIENT_PORT}"
+    environment:
+      - REACT_APP_API_ENDPOINT=${HOST}
+    # healthcheck:
+    #   test: "${DOCKER_CLIENT_HEALTHCHECK_TEST}"
+    volumes:
+      - "./adminapp:/node/app:delegated"
+      - "/node/app/node_modules"

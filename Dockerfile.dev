@@ -1,0 +1,6 @@
+FROM mcr.microsoft.com/dotnet/sdk:7.0 as development
+WORKDIR /net
+COPY . ./
+RUN dotnet restore
+WORKDIR /net/app
+CMD [ "dotnet", "watch" , "run" ]

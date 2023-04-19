@@ -112,14 +112,14 @@ export default function AddCategoryForm(props) {
         onClose={handleClose}
     >
         <Box p={3} component='form' onSubmit={handleSubmit(onSubmit)} style={style}>
-        <FormLabel ><b> ADD CATEOGRY </b> </FormLabel>
+        <FormLabel ><b> ADD CATEGORY </b> </FormLabel>
         <FormControl fullWidth />
         <FormControl sx={{ my : 3 , px : 3, width : '36ch'}} required >
                 <InputLabel>Code: </InputLabel>
                 <Controller
                     name="code"
                     control={control}
-                    rules={{ required: true , pattern : {value : /^[A-Za-z0-9_-]{5,30}$/ , message: "Invalid code"} }}
+                    rules={{ required: true , pattern : {value : /^[A-Za-z0-9_-]{3,30}$/ , message: "Invalid code"} }}
                     render={({ field }) => <Input {...field} error={errors.code !== undefined || AddCategoryErrors?.Code !== undefined}   />}
                 />
                 <FormHelperText error={errors.code !== undefined || AddCategoryErrors?.Code !== undefined} >{errors?.code?.message || (AddCategoryErrors?.Code && AddCategoryErrors?.Code[0])  }</FormHelperText>
@@ -142,7 +142,7 @@ export default function AddCategoryForm(props) {
                     render={({ field }) => <TextField label='Description'   {...field} error={errors.description !== undefined || AddCategoryErrors?.description !== undefined} multiline minRows={5}  />}
                 />
               <FormHelperText error={errors.description !== undefined || AddCategoryErrors?.description !== undefined} >{errors?.description?.message || (AddCategoryErrors?.description && AddCategoryErrors?.description[0]) }</FormHelperText>
-        </FormControl >
+            </FormControl >
         <Controller
                     name="parentId"
                     control={control}

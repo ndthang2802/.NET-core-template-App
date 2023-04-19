@@ -3,6 +3,14 @@ using StartFromScratch.Common;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace StartFromScratch.Entities;
+
+public static class UserFunc {
+    public static string HashPassword(string? Password)
+    {
+        return BCrypt.Net.BCrypt.HashPassword(Password);
+    }
+}
+
 public class User : BaseAuditableEntity
 {
     public string? Username {get;set;}

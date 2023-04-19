@@ -25,6 +25,7 @@ public class GetTodoByUserCommandHandler : IRequestHandler<GetTodoByUserCommand,
             throw new UnauthorizedAccessException();
         }
         IList<TodoItem> entities =   await  _todoItemService.GetByUserId(_currentUserService.UserId);
+
         BaseReponse reponse = new BaseReponse {
             Message = "Query Success!",
             Data = entities

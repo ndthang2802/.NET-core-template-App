@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using StartFromScratch.Models;
 
@@ -11,9 +12,11 @@ using StartFromScratch.Models;
 namespace StartFromScratch.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230415085511_InitDBB")]
+    partial class InitDBB
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -239,10 +242,10 @@ namespace StartFromScratch.Migrations
                         {
                             Id = 1,
                             Code = "Administrator",
-                            Created = new DateTime(2023, 4, 16, 15, 25, 48, 893, DateTimeKind.Local).AddTicks(6254),
+                            Created = new DateTime(2023, 4, 15, 15, 55, 10, 908, DateTimeKind.Local).AddTicks(1992),
                             CreatedBy = 1,
                             Description = "Highest role",
-                            LastModified = new DateTime(2023, 4, 16, 15, 25, 48, 893, DateTimeKind.Local).AddTicks(6256),
+                            LastModified = new DateTime(2023, 4, 15, 15, 55, 10, 908, DateTimeKind.Local).AddTicks(1994),
                             LastModifiedBy = 1,
                             Level = 0
                         });
@@ -336,12 +339,12 @@ namespace StartFromScratch.Migrations
                         {
                             Id = 1,
                             Address = "No XXX str, XXXX, XXXX, 0000",
-                            Created = new DateTime(2023, 4, 16, 15, 25, 48, 893, DateTimeKind.Local).AddTicks(5235),
+                            Created = new DateTime(2023, 4, 15, 15, 55, 10, 908, DateTimeKind.Local).AddTicks(534),
                             CreatedBy = 0,
                             Email = "admin@admin.com",
-                            LastModified = new DateTime(2023, 4, 16, 15, 25, 48, 893, DateTimeKind.Local).AddTicks(5249),
+                            LastModified = new DateTime(2023, 4, 15, 15, 55, 10, 908, DateTimeKind.Local).AddTicks(551),
                             LastModifiedBy = 1,
-                            PasswordHash = "$2a$11$J8GJlSdahwT4SL1NSyTNzue/yVVpJtueM7/6vXGW/QH/Pv8Unar5O",
+                            PasswordHash = "$2a$11$Xl1rdx20l.ssnj/WT0KcA.B7DnKpCMuU5P3/n/tHxMurIqzz5XoUm",
                             PhoneNumber = "0000000000",
                             Roles = "Administrator",
                             Username = "admin"
